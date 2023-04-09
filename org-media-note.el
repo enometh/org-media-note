@@ -54,6 +54,9 @@
                  ("o" org-media-note-play-smart
                   :description org-media-note--ui-play-smart-title
                   :transient nil)
+                ("Q" (lambda () (interactive) (mpv-quit t))
+                 :description "watch later"
+                 :transient nil)
                  ("M-o" "Browse url"
                   org-media-note-open-url-at-point
                   :transient nil
