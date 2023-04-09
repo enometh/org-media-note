@@ -659,7 +659,7 @@ This list includes the following elements:
     (setq org-media-note-screenshot-with-sub t)))
 
 (defun org-media-note-toggle-timestamp-pattern ()
-  "Toggle screenshot with sub."
+  "Toggle timestamp pattern.."
   (interactive)
   (cond
    ((eq org-media-note-timestamp-pattern 'hms)
