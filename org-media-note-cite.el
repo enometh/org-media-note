@@ -96,8 +96,10 @@
                               (let* ((media-note-link (org-element-property :path object))
                                      (ref-cite-key (car (split-string media-note-link "#")))
                                      (hms (cdr (split-string media-note-link "#"))))
-                                (format "%s @ %s"
-					(funcall org-media-note-cite-format-fn ref-cite-key)
+				(format "%s @ %s"
+					(or (and ref-cite-key
+						 (funcall org-media-note-cite-format-fn ref-cite-key))
+					    "??")
                                         hms))))))))))
 
 
