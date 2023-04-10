@@ -29,10 +29,28 @@
   (save-excursion
     (goto-char position)
     (let ((s (org-media-note-media-cite-link-message)))
-      (with-temp-buffer
-        (insert s)
-        (fill-paragraph)
-        (buffer-string)))))
+      (when s
+        (with-temp-buffer
+          (insert s)
+          (fill-paragraph)
+          (buffer-string))))))
+
+(defun org-media-note-ref-cite (ref-cite-key)
+  (if (fboundp 'org-ref-format-entry)
+      (funcall 'org-ref-format-entry ref-cite-key)
+    ;; ;madhu 230410 copied from org-ref/org-ref-citation-links.el:
+    ;; (org-ref-cite-tooltip). FIXME refactor in org-ref.
+    (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+           (has-pdf (when (bibtex-completion-find-pdf ref-cite-key)
+                      bibtex-completion-pdf-symbol))
+           (has-notes
+            (when (cl-some #'identity
+                           (mapcar (lambda (fn)
+                                     (funcall fn ref-cite-key))
+                                   bibtex-completion-find-note-functions))
+              bibtex-completion-notes-symbol)))
+      (format "%s%s %s" (or has-pdf "") (or has-notes "")
+              (bibtex-completion-apa-format-reference ref-cite-key)))))
 
 (defun org-media-note-media-cite-link-message ()
   "Print a minibuffer message about the link that point is on."
@@ -56,7 +74,8 @@
                                      (ref-cite-key (car (split-string media-note-link "#")))
                                      (hms (cdr (split-string media-note-link "#"))))
                                 (format "%s @ %s"
-                                        (org-ref-format-entry ref-cite-key)
+                                        (or (and ref-cite-key (org-media-note-ref-cite ref-cite-key))
+                                            "??")
                                         hms))))))))))
 
 (defun org-media-note-display-media-cite-link-message-in-eldoc (&rest _)
