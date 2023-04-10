@@ -34,6 +34,16 @@
           (fill-paragraph)
           (buffer-string))))))
 
+;; compat
+(defun org-media-note-ref-parse-path (path)
+  "try to handle org-ref  v3 syntax"
+  (let* ((cite (org-ref-parse-cite-path path))
+	 (references (plist-get cite :references))
+	 (keys (cl-loop for ref in references collect
+			(plist-get ref :key))))
+    ;; XXX return the first key
+    (car keys)))
+
 (defun org-media-note-ref-cite (ref-cite-key)
   (if (fboundp 'org-ref-format-entry)
       (funcall 'org-ref-format-entry ref-cite-key)
@@ -69,7 +79,8 @@
                             (cond
                              ((or (string= type "videocite")
                                   (string= type "audiocite"))
-                              (let* ((media-note-link (org-element-property :path object))
+                              (let* ((media-note-link (org-media-note-ref-parse-path
+						       (org-element-property :path object)))
                                      (ref-cite-key (car (split-string media-note-link "#")))
                                      (hms (cdr (split-string media-note-link "#"))))
                                 (format "%s @ %s"
@@ -87,7 +98,8 @@
   (interactive)
   (let* ((object (org-element-context))
          (media-note-link (if (eq (org-element-type object) 'link)
-                              (org-element-property :path object)))
+			      (org-media-note-ref-parse-path
+			       (org-element-property :path object))))
          (ref-cite-key (car (split-string media-note-link "#"))))
     (with-temp-buffer
       (org-mode)
