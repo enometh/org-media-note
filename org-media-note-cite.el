@@ -20,6 +20,7 @@
   :type '(repeat (choice (const :tag "bibtex-file-path" bibtex-file-path)
                          directory file)))
 
+;; ;madhu 250704 - set to org-media-note-ref-cite to use org-ref
 (defcustom org-media-note-cite-format-fn #'org-media-note-cite-format-entry
   "Function to format citation entries."
   :type 'function)

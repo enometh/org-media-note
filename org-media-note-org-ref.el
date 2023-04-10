@@ -28,4 +28,21 @@
   :type 'symbol
   :group 'org-media-note)
 
+(defun org-media-note-ref-cite (ref-cite-key)
+  (if (fboundp 'org-ref-format-entry)
+      (funcall 'org-ref-format-entry ref-cite-key)
+    ;; ;madhu 230410 copied from org-ref/org-ref-citation-links.el:
+    ;; (org-ref-cite-tooltip). FIXME refactor in org-ref.
+    (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+           (has-pdf (when (bibtex-completion-find-pdf ref-cite-key)
+                      bibtex-completion-pdf-symbol))
+           (has-notes
+            (when (cl-some #'identity
+                           (mapcar (lambda (fn)
+                                     (funcall fn ref-cite-key))
+                                   bibtex-completion-find-note-functions))
+              bibtex-completion-notes-symbol)))
+      (format "%s%s %s" (or has-pdf "") (or has-notes "")
+              (bibtex-completion-apa-format-reference ref-cite-key)))))
+
 (provide 'org-media-note-org-ref)
