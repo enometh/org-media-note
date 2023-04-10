@@ -138,7 +138,10 @@
     (org-link-set-parameters link
                              :follow 'org-media-note-cite--open
                              :help-echo #'org-media-note-cite--help-echo))
-
+  (when org-media-note-use-org-ref
+    (dolist (link '("videocite" "audiocite"))
+      (org-link-set-parameters link
+			       :keymap #'org-media-note-cite-keymap)))
   ;; Display media link description in minibuffer when cursor is over it.
   (advice-add #'org-eldoc-documentation-function
               :before-until #'org-media-note-cite-display-message-in-eldoc))
