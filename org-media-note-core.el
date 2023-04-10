@@ -124,6 +124,10 @@ Based on path, timestamp and desc."
   "Whether to use reference together with org-media-note."
   :type 'boolean)
 
+(defcustom org-media-note-use-org-ref nil
+  "use reinstated org-ref support"
+  :type 'boolean)
+
 (defcustom org-media-note-use-refcite-first nil
   "When non-nil, use refcite instead of file path when taking notes if possible."
   :type 'boolean)
