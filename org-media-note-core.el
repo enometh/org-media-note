@@ -456,8 +456,9 @@ This list includes the following elements:
                                                media-path
                                              (expand-file-name media-path))))
                                         ((member link-type '("audiocite" "videocite"))
-                                         (let ((key (nth 0
-                                                         (split-string link-path "#"))))
+                                         (let* ((link (org-media-note-ref-parse-path link-path))
+						(key (nth 0
+                                                          (split-string link "#"))))
                                            (or (org-media-note-get-media-file-by-key key)
                                                (org-media-note-get-url-by-key key))))
                                         ((org-media-note--online-video-p path-with-type) path-with-type)
