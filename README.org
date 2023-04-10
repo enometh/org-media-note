@@ -92,6 +92,7 @@ Open online video, then operate the same as local files!
   :bind (("s-v" . org-media-note-show-interface))
   :config
   (setq org-media-note-use-refcite-first t)
+  (setq org-media-note-cite-format-fn #'org-media-note-ref-cite)
   (setq org-media-note-screenshot-image-dir "~/Screenshots/"))
      #+END_SRC
 
