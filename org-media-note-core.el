@@ -519,7 +519,7 @@ This list includes the following elements:
          (path (nth 0 splitted))
          (timestamps (if (> (length splitted) 1)
                          (split-string (nth 1 splitted) "-")
-                       nil))
+                       '("0")))
          (time-a (nth 0 timestamps))
          (time-b (if (and timestamps (= (length timestamps) 2))
                      (nth 1 timestamps))))
