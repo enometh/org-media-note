@@ -440,11 +440,13 @@ Pass ARGS to ORIG-FN, `org-insert-item'."
 (defun org-media-note-adjust-timestamp-offset ()
   "Adjust timestamp offset."
   (interactive)
-  (let* ((current-playing-position (mpv-get-playback-position)) link
+  (let* ((current-playing-position (mpv-get-playback-position))
          current-link-position
-         offset)
-    (cl-multiple-value-bind (_ _ link _)
-        (org-link-edit--link-data)
+         offset
+	 (el (org-element-context))
+	 (link (and el (eq (org-element-type el) 'link)
+		    (org-element-property :raw-link el))))
+    (when link
       (let* ((splitted (split-string link "#"))
              (timestamps (split-string (nth 1 splitted))))
         (setq current-link-position (org-timer-hms-to-secs (nth 0 timestamps)))
