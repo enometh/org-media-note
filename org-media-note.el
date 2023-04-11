@@ -85,6 +85,10 @@
 (org-link-set-parameters "audio"
                          :follow 'org-media-note-media-link-follow)
 
+(unless (org-link-get-parameter "mpv" :follow)
+  (org-link-set-parameters "mpv"
+			   :follow 'org-media-note-media-link-follow))
+
 ;;;;; Toggle
 
 (defun org-media-note-toggle-refcite ()
