@@ -805,8 +805,10 @@ Supported formats:
   jump to 0:02:13 and loop between 0:02:13 and 0:02:20."
   (let* ((splitted (split-string link "#"))
          (file-path-or-url (nth 0 splitted))
-         (timestamps (split-string (nth 1 splitted)
-                                   "-"))
+         (timestamps (if (nth 1 splitted)
+			 (split-string (nth 1 splitted)
+				       "-")
+		       '("0")))
          (time-a (org-media-note--timestamp-to-seconds (nth 0 timestamps)))
          (time-b (if (= (length timestamps) 2)
                      (org-media-note--timestamp-to-seconds (nth 1 timestamps)))))
