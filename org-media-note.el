@@ -133,6 +133,10 @@ With optional ARG, abbreviate the file name in the link."
                            :complete (lambda (&optional arg) (org-media-note-complete-link link arg))
                            :insert-description #'org-media-note-default-timestamp-description))
 
+(unless (org-link-get-parameter "mpv" :follow)
+  (org-link-set-parameters "mpv"
+			   :follow 'org-media-note-media-link-follow))
+
 ;;;;; Config
 
 (defun toggle-org-media-note-auto-insert-item ()
