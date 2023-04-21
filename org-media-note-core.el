@@ -305,9 +305,27 @@ If OMIT-DECIMAL is non-nil, return the integer part only."
                   fff))
       (int-to-string (org-timer-hms-to-secs hms)))))
 
+;; ;madhu 230421
+(defun org-media-note--org-ref-key-from-bibtex-completion-notes (file)
+  "Return the org-ref key from the current org-ref notes file.
+if bibtex-completion-notes-path is a directory then notes are stored in
+individual files without a CUSTOM_ID property. The link is in the name of the
+file."
+  (if (and (boundp 'bibtex-completion-notes-path)
+	   bibtex-completion-notes-path
+	   (file-directory-p bibtex-completion-notes-path)
+	   (equal (expand-file-name
+		   (directory-file-name bibtex-completion-notes-path))
+		  (expand-file-name
+		   (directory-file-name
+		    (file-name-directory file)))))
+      (file-name-sans-extension		;it's an org file
+       (file-name-nondirectory buffer-file-name))))
+
 (defun org-media-note--current-org-ref-key ()
   "Return the `org-ref' key of current org entry."
-  (org-entry-get (point) org-media-note-ref-key-field org-media-note-use-inheritance))
+  (or (org-entry-get (point) org-media-note-ref-key-field org-media-note-use-inheritance)
+      (org-media-note--org-ref-key-from-bibtex-completion-notes buffer-file-name)))
 
 (defun org-media-note--current-media-type ()
   "Get current playing media type."
