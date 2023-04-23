@@ -161,8 +161,9 @@
       (org-link-set-parameters link
 			       :keymap #'org-media-note-cite-keymap)))
   ;; Display media link description in minibuffer when cursor is over it.
-  (advice-add #'org-eldoc-documentation-function
-              :before-until #'org-media-note-cite-display-message-in-eldoc))
+  (when (fboundp 'org-eldoc-documentation-function)
+    (advice-add #'org-eldoc-documentation-function
+		:before-until #'org-media-note-cite-display-message-in-eldoc)))
 
 ;;;; Footer
 (provide 'org-media-note-cite)
