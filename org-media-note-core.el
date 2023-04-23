@@ -325,6 +325,11 @@ file."
 (defun org-media-note--current-org-ref-key ()
   "Return the `org-ref' key of current org entry."
   (or (org-entry-get (point) org-media-note-ref-key-field org-media-note-use-inheritance)
+       (and org-media-note-use-org-ref
+	   (let* ((object (org-element-context))
+		  (type (org-element-property :type object)))
+	     (and (cl-member type '("cite" "audiocite" "videocite") :test  #'equal)
+		  (org-media-note--org-ref-key-from-cite))))
       (org-media-note--org-ref-key-from-bibtex-completion-notes buffer-file-name)))
 
 (defun org-media-note--current-media-type ()
