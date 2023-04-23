@@ -189,6 +189,14 @@
   (advice-add #'org-eldoc-documentation-function
               :before-until #'org-media-note-display-media-cite-link-message-in-eldoc))
 
+(defun org-media-note--org-ref-key-from-cite ()
+  (let* ((object (org-element-context))
+	 (type (org-element-property :type object))
+	 (key (org-media-note-ref-parse-path
+	       (org-element-property :path object))))
+    (and ;; (cl-member type '("cite") :test  #'equal)
+	 key)))
+
 ;;;; Footer
 (provide 'org-media-note-org-ref)
 ;;; org-media-note-org-ref.el ends here
