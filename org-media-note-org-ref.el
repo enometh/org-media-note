@@ -62,6 +62,8 @@
       (format "%s%s %s" (or has-pdf "") (or has-notes "")
               (bibtex-completion-apa-format-reference ref-cite-key)))))
 
+(defvar org-media-note-link-types '("videocite" "audiocite"))
+
 (defun org-media-note-media-cite-link-message ()
   "Print a minibuffer message about the link that point is on."
   (interactive)
@@ -78,8 +80,7 @@
                                (type (org-element-property :type object)))
                           (save-excursion
                             (cond
-                             ((or (string= type "videocite")
-                                  (string= type "audiocite"))
+                             ((cl-find type org-media-note-link-types :test #'equal)
                               (let* ((media-note-link (org-media-note-ref-parse-path
 						       (org-element-property :path object)))
                                      (ref-cite-key (car (split-string media-note-link "#")))
@@ -179,6 +180,15 @@
   ;; Display media link description in minibuffer when cursor is over it.
   (advice-add #'org-eldoc-documentation-function
               :before-until #'org-media-note-display-media-cite-link-message-in-eldoc))
+
+(defun org-media-note--org-ref-key-from-cite ()
+  (let* ((object (org-element-context))
+	 (type (org-element-property :type object))
+	 (media-note-link (org-media-note-ref-parse-path
+	       (org-element-property :path object)))
+	 (ref-cite-key (car (split-string media-note-link "#"))))
+    (and ;; (cl-member type '("cite") :test #'equal)
+	 ref-cite-key)))
 
 ;;;; Footer
 (provide 'org-media-note-org-ref)
