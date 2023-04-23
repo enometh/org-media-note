@@ -162,8 +162,10 @@
                              :help-echo #'org-media-note-help-echo))
 
   ;; Display media link description in minibuffer when cursor is over it.
-  (advice-add #'org-eldoc-documentation-function
-              :before-until #'org-media-note-display-media-cite-link-message-in-eldoc))
+  (when (fboundp 'org-eldoc-documentation-function)
+    (advice-add #'org-eldoc-documentation-function
+		:before-until #'org-media-note-display-media-cite-link-message-in-eldoc)))
+
 
 ;;;; Footer
 (provide 'org-media-note-org-ref)
