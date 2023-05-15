@@ -1,0 +1,66 @@
+
+* About org-media-notes/contrib
+** Sample setup in ~/.emacs.d/init.el
+#+begin_src elisp
+;;; * Pre-Reqs - load the pre-reqs
+(require 'mpv)
+(require 'org-ref)
+
+;;; * Org-Media-Note
+(add-to-list 'load-path  "~/elisp/pkg/org-media-note")
+(require 'org-media-note)
+(require 'org-media-note-org-ref)
+
+(setq org-media-note-use-org-ref t)
+(setq org-media-note-use-refcite-first t)
+(add-hook 'org-mode-hook 'org-media-note-mode)
+
+;;; use the original pretty-hydra UI shipped with with o-m-n
+(require 'org-media-note-pretty-hydra)
+(keymap-global-set "s-v" 'org-media-note-hydra/body)
+
+;;; * Contribs - or use some of these contribs
+(add-to-list 'load-path "~/elisp/pkg/org-media-note/contrib")
+
+;; an alternative to pretty-hydra (only uses regular hydra)
+(require 'omn-hydra)
+(keymap-global-set "s-v" 'omn-hydra/body)
+
+;; or use the so-called "transient" package
+(require 'omn-transient)
+(keymap-global-set "s-v" 'omn-transient)
+
+;;; * Org-ref contribs. these contribs really belong to the org-ref
+;;; package. Instead of using "hydra" they use the so-called
+;;; "transient" package for the UI.
+
+(require 'or-transient)
+;; `or-insert-transient' is a replacement for
+;; `org-ref-insert-link-hydra/body'
+;;
+;; (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body)
+;; (setq org-ref-insert-link-function 'or-insert-link-transient)
+
+(require 'orb-transient)
+;; `orb-transient' is a replacement for `org-ref-bibtex-hydra/body'
+;;
+;; (keymap-set bibtex-mode-map "s-b" 'org-ref-bibtex-hydra/body)
+;; (keymap-set bibtex-mode-map "s-b" 'org-ref-bibtex-hydra/body)
+
+(require 'orc-transient)
+;; `org-ref-citation-transient' is a replacement for
+;; `org-ref-citation-hydra/body'
+;;
+;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-hydra/body)))
+;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-transient)))
+;; (defun org-ref-cite-follow-override-advice (_path) (interactive) (org-ref-citation-transient))
+;; (advice-remove  'org-ref-cite-follow 'org-ref-cite-follow-override-advice)
+;; (advice-add 'org-ref-cite-follow :override 'org-ref-cite-follow-override-advice)
+
+;;; * Misc contribs
+
+(require 'org-pdf-open)
+;; provides some unpolished integration with mupdf/evince, pdfcite org
+;; links.
+
+#+end_src
