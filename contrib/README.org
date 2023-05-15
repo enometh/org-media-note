@@ -1,0 +1,59 @@
+
+* About org-media-notes/contrib
+** Sample setup in ~/.emacs.d/init.el
+#+begin_src elisp
+;;; * Pre-Reqs - load the pre-reqs
+(require 'mpv)
+(require 'org-ref)
+
+;;; * Org-Media-Note
+(add-to-list 'load-path  "~/elisp/pkg/org-media-note")
+(require 'org-media-note)
+(require 'org-media-note-org-ref)
+
+(setq org-media-note-use-cite t)
+(setq org-media-note-use-org-ref t)
+(setq org-media-note-cite-format-fn #'org-media-note-ref-cite)
+(setq org-media-note-use-refcite-first t)
+(add-hook 'org-mode-hook 'org-media-note-mode)
+
+;;(bibtex-completion-init) - before bibtex-completion-find-pdf can work
+
+
+;;; * Contribs - or use some of these contribs
+(add-to-list 'load-path "~/elisp/pkg/org-media-note/contrib")
+
+;;; * Org-ref contribs. these contribs really belong to the org-ref
+;;; package. Instead of using "hydra" they use the so-called
+;;; "transient" package for the UI.
+
+(require 'or-transient)
+;; `or-insert-transient' is a replacement for
+;; `org-ref-insert-link-hydra/body'
+;;
+;; (setq org-ref-insert-link-function 'or-insert-link-transient)
+;; (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body)
+
+(require 'orb-transient)
+;; `orb-transient' is a replacement for `org-ref-bibtex-hydra/body'
+;;
+;; (keymap-set bibtex-mode-map "s-b" 'orb-transient)
+;; (keymap-set bibtex-mode-map "s-b" 'org-ref-bibtex-hydra/body)
+
+(require 'orc-transient)
+;; `org-ref-citation-transient' is a replacement for
+;; `org-ref-citation-hydra/body'
+;;
+;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-hydra/body)))
+;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-transient)))
+;; (defun org-ref-cite-follow-override-advice (_path) (interactive) (org-ref-citation-transient))
+;; (advice-remove  'org-ref-cite-follow 'org-ref-cite-follow-override-advice)
+;; (advice-add 'org-ref-cite-follow :override 'org-ref-cite-follow-override-advice)
+
+;;; * Misc contribs
+
+(require 'org-pdf-open)
+;; provides some unpolished integration with mupdf/evince, pdfcite org
+;; links.
+
+#+end_src
