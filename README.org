@@ -1,6 +1,9 @@
 [[file:README_CN.org][中文文档]]
 
 [[file:CHANGELOG.org][Changelog]]
+
+[[file:contrib/README.org][Contributed Extras (enometh)]]
+
 * About
 Take notes for video and audio files in org-mode! Now supported:
 
