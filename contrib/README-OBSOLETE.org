@@ -1,0 +1,15 @@
+* README-OBSOLETE.org in org-media-notes/contrib
+
+This contains references to files still around in this contrib
+directory which are not usable with current org-media-note.
+
+#+begin_src elisp
+;; an alternative to pretty-hydra (only uses regular hydra)
+(require 'omn-hydra)
+(keymap-global-set "s-v" 'omn-hydra/body)
+
+;; or use the so-called "transient" package
+(require 'omn-transient)
+(keymap-global-set "s-v" 'omn-transient)
+#+end_src
+
