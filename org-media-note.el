@@ -153,6 +153,7 @@
                 ["Note"
                  ("i" "Insert timestamp" org-media-note-insert-link
                   :transient nil)
+		 ("u" "Update timestamp" org-media-note-update-link-timestamp)
                  ("a" "Adjust timestamp" org-media-note-adjust-timestamp-offset)
                  ("M" "Remove timestamps" org-media-note-remove-timestamps-in-region
                   :transient nil)
