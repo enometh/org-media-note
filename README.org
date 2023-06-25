@@ -153,6 +153,7 @@ All functions can be reached from =org-media-note-hydra/body= :
     - 💡 Video path format is consistent with =org-link-file-path-type=
     - 💡 When set =org-media-note-cursor-start-position= to =before= , move cursor to the start of link after insertion. This works for manual insertion only. Cursor is always at the end of link for those auto inserted by =<M-return>=.
   + =a= Adjust current link position to current playing position. Then, apply this offset to all links under current heading.
+  + =u= Update the timestamp portion of the current link to the current playing position, retaining the remaining parts of the ref-cite are left unchecked
   + =S= If there is no ab-loop currently, insert the current video screenshot (=org-media-note-insert-screenshot=), otherwise insert the current ab-loop's video clip or GIF (=org-media-note-capture-ab-loop-and-insert=).
     - ℹ variables related:
       + =org-media-note-screenshot-save-method= : customize the place to save screenshot

@@ -81,6 +81,7 @@
      "(un)mute"))
    "Note"
    (("i" org-media-note-insert-link "Insert timestamp")
+    ("u" org-media-note-update-link-timestamp "Update Link timestamp")
     ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
     ("S"
      (if (org-media-note--ab-loop-p)

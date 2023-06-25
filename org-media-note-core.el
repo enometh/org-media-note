@@ -787,6 +787,39 @@ Generate OUTPUT-FILE from OUTPUT-FILE-SANS-EXT and return it."
     (if sub-text
         (insert sub-text)
       (message "No subtitles found in current file."))))
+
+
+;;;;; Update timestamp
+(cl-defun org-media-note--link-extract-link (string &key (start 0)
+						    (end (length string)))
+  ;; handle [[link][desc]] & [[link]]
+  (cl-assert (eql (elt string (+ start 0)) ?\[))
+  (cl-assert (eql (elt string (+ start 1)) ?\[))
+  (cl-assert (eql (elt string (- end 1)) ?\]))
+  (cl-assert (eql (elt string (- end 2)) ?\]))
+  (let ((q (cl-search "][" string :start2 2 :end2 (- end 2) :from-end t)))
+    (cl-subseq string (+ start 2) (or q (- end 2)))))
+
+(defun org-media-note-update-link-timestamp ()
+  "Replace the org-link link (including timestamp) of the link under point
+with what is playing on mpv.  Leave the link description unchanged.  THIS DOES
+NOT CHECK IF THE MEDIA CURENTLY PLAYING IS THE MEDIA BEING UPDATED IN THE
+LINK.
+"
+  (interactive)
+  (let* ((el (org-element-context))
+	 (link (and el (eq (org-element-type el) 'link)
+		    (org-element-property :raw-link el))))
+    (when link
+      (let* ((new-link-and-desc (org-media-note--link))
+	     (new-link (org-media-note--link-extract-link new-link-and-desc)))
+	(save-excursion
+	  (org-forward-element)
+	  (when (re-search-backward link nil t)
+	    (replace-match new-link)))
+	(when (and nil org-media-note-pause-after-insert-link)
+	  (mpv-pause))))))
+
 ;;;;; Adjust timestamp
 
 (defun org-media-note-adjust-timestamp-offset ()
