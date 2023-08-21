@@ -63,4 +63,7 @@
 ;; provides some unpolished integration with mupdf/evince, pdfcite org
 ;; links.
 
+(require 'bibtex-completion-utils)
+;; provides functions to map over known bibtex entries.
+
 #+end_src
