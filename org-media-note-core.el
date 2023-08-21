@@ -6,6 +6,7 @@
 ;;;; Requirements
 (require 'mpv)
 (require 'org)
+(require 'bibtex-completion-utils "contrib/bibtex-completion-utils.el")
 
 (require 'cl-lib)
 
@@ -313,7 +314,9 @@ file."
 		  (type (org-element-property :type object)))
 	     (and (cl-member type '("cite" "audiocite" "videocite") :test  #'equal)
 		  (org-media-note--org-ref-key-from-cite))))
-      (org-media-note--org-ref-key-from-bibtex-completion-notes buffer-file-name)))
+      (org-media-note--org-ref-key-from-bibtex-completion-notes buffer-file-name)
+      (let ((file-path (mpv-get-property "path")))
+	(org-media-note-lookup-citation-for-file file-path))))
 
 (defun org-media-note--current-media-type ()
   "Get current playing media type."
@@ -340,8 +343,12 @@ file."
 
 (defun org-media-note-ref-cite-p ()
   "Return t if refcite link should be used instead of file path, nil otherwise."
-  (and (org-media-note--current-org-ref-key)
-       org-media-note-use-refcite-first))
+  ;; ;madhu 230821 FIXME: rewrite all uses of this predicate. the call
+  ;; is expensive and if true, the callers immediately call
+  ;; org-media-note--current-org-ref-key again.
+  (and org-media-note-use-refcite-first
+       (org-media-note--current-org-ref-key)
+       t))
 
 (defun org-media-note--online-video-p (path)
   "Return t if PATH is an online video link."
@@ -590,13 +597,30 @@ This list includes the following elements:
          (<= time-a pos)
          (<= pos time-b))))
 
+(defun org-media-note-lookup-citation-for-file (file)
+  (when file
+    (cl-block nil
+      (bibtex-completion-map-entries
+       (lambda (entry-key entry)
+	 (when-let (ent (assoc-string "file" entry))
+	   ;; use cl-search if the file is enclosed in bracket {}
+	   ;; characters
+	   (when (cl-search file (cdr ent))
+	     (when-let (ent (assoc-string "=key=" entry))
+	       (cl-assert (equal entry-key (cdr ent)) nil
+			  "%S != %S" entry-key (cdr ent)))
+	     (cl-return-from nil entry-key))))))))
+
 (defun org-media-note--link-base-file (file-path)
   "Return base file for FILE-PATH."
   (if (org-media-note-ref-cite-p)
-      (org-media-note--current-org-ref-key)
-    (if (org-media-note--online-video-p file-path)
-        file-path
-      (org-media-note--format-file-path file-path))))
+      (concat "&" ; default to org-ref-cite-insert-version == 3
+	      (org-media-note--current-org-ref-key))
+    (or (and org-media-note-use-refcite-first
+	     (org-media-note-lookup-citation-for-file file-path))
+	(if (org-media-note--online-video-p file-path)
+	    file-path
+	  (org-media-note--format-file-path file-path)))))
 
 (defun org-media-note--link-formatter (string map)
   "Return a copy of STRING with replacements from MAP.
