@@ -66,4 +66,13 @@
 (require 'bibtex-completion-utils)
 ;; provides functions to map over known bibtex entries.
 
+(require 'org-ref-publish)
+;; this is now in org-ref (commit 2aa6dd687 2023-06-29)
+;;
+;; (also see  the org-ref-publish-elisp-config branch under
+;;  https://github.com/enometh/org-media-note/branches
+;; https://github.com/enometh/org-media-note/tree/org-ref-publish-elisp-config
+;; for how I configure org-ref-publish)
+
+
 #+end_src
