@@ -4,6 +4,7 @@
 
 
 [[file:contrib/README.org][Contributed Extras (enometh)]]
+-  (also see the org-ref-publish-elisp-config branch  https://github.com/enometh/org-media-note/tree/org-ref-publish-elisp-config for how I configure the org-media-note contribs)
 
 
 * 🌟 About
