@@ -11,5 +11,10 @@ directory which are not usable with current org-media-note.
 ;; or use the so-called "transient" package
 (require 'omn-transient)
 (keymap-global-set "s-v" 'omn-transient)
+
+(require 'org-ref-publish)
+;; this is now in org-ref (commit 2aa6dd687 2023-06-29)
+;;
+
 #+end_src
 
