@@ -46,6 +46,12 @@
 
 (org-add-link-type "pdfcite" 'org-pdf-cite-open nil)
 
+;; ;madhu 231116 still won't let org-ref open pdfcite links when they
+;; point to a page, as org-ref won't strip off the #page fragment
+(cl-pushnew (cons "pdfcite" (list "pdfcite extensions via org-media-note contrib"))
+	    org-ref-cite-types
+	    :test (lambda (a b) (equal (car a) (car b))))
+
 (defun org-pdf-cite-open (link)
   (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
 	 (pos (cl-position ?# link))
