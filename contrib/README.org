@@ -59,4 +59,10 @@
 (require 'bibtex-completion-utils)
 ;; provides functions to map over known bibtex entries.
 
+;;; ** SL-REC - Utilities to generate bibtex entries from zip archives
+;;;  and extract files from the zip archives from the bibtex key.
+
+(require 'sl-rec)
+;; how to use it: see comments in the worked out in `sl-rec-fzp.el'
+
 #+end_src
