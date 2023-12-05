@@ -111,6 +111,11 @@
   (or (org-media-note-cite--file-path key)
       (org-media-note-cite--url key)))
 
+(defvar org-media-note-bypass-realpath t
+  "Don't use file-truename to resolve media file locations, as this may resolve
+to a filename which is not identical to the file field in the bibliography,
+and reverse lookups may fail.")
+
 (defun org-media-note-cite--file-path (key)
   "Get media file by KEY."
   (setq key (if (eql (elt key 0) ?&) (substring key 1) key))
@@ -121,11 +126,15 @@
 	 (files (bibtex-completion-find-pdf key))
 	 (video-files (org-media-note--filter-by-extensions files org-media-note--video-types))
 	 (audio-files (org-media-note--filter-by-extensions files org-media-note--audio-types)))
+
+    (cl-letf (((symbol-function 'file-truename)
+	       (if org-media-note-bypass-realpath
+		   #'identity #'file-truename)))
     (cond
      ;; TODO when multiple media files?
      (video-files (file-truename (nth 0 video-files)))
      (audio-files (file-truename (nth 0 audio-files)))
-     (t nil))))
+     (t nil)))))
 
 (defun org-media-note--filter-by-extensions (file-list extensions)
     "Filter files from FILE-LIST whose extensions belong to EXTENSIONS."
