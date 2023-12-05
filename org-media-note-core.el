@@ -554,10 +554,9 @@ This list includes the following elements:
 (defun org-media-note--link ()
   "Return media link."
   (let* ((file-path (mpv-get-property "path"))
-         (link-type (if (org-media-note-ref-cite-p)
-                        (concat (org-media-note--current-media-type)
-                                "cite")
-                      (org-media-note--current-media-type)))
+         (link-type (concat (org-media-note--current-media-type)
+			    (if org-media-note-use-refcite-first
+				"cite")))
          (filename (mpv-get-property "media-title"))
          (duration (org-media-note--get-duration-timestamp))
          (timestamp (org-media-note--get-current-timestamp)))
@@ -613,14 +612,12 @@ This list includes the following elements:
 
 (defun org-media-note--link-base-file (file-path)
   "Return base file for FILE-PATH."
-  (if (org-media-note-ref-cite-p)
-      (concat "&" ; default to org-ref-cite-insert-version == 3
-	      (org-media-note--current-org-ref-key))
-    (or (and org-media-note-use-refcite-first
-	     (org-media-note-lookup-citation-for-file file-path))
-	(if (org-media-note--online-video-p file-path)
-	    file-path
-	  (org-media-note--format-file-path file-path)))))
+  (or (and org-media-note-use-refcite-first
+	   (concat "&" ; default to org-ref-cite-insert-version == 3
+		   (org-media-note-lookup-citation-for-file file-path)))
+      (if (org-media-note--online-video-p file-path)
+	  file-path
+	(org-media-note--format-file-path file-path))))
 
 (defun org-media-note--link-formatter (string map)
   "Return a copy of STRING with replacements from MAP.
