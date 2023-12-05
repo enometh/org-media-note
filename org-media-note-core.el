@@ -757,11 +757,10 @@ This list includes the following elements:
   "Return media link."
   (cl-multiple-value-bind (file-path filename timestamp)
       (org-media-note--current-media-info)
-    (let ((link-type (if (org-media-note-ref-cite-p)
-                         (concat (org-media-note--current-media-type)
-                                 "cite")
-                       (org-media-note--current-media-type))))
-      (if (org-media-note--ab-loop-p)
+    (let ((link-type (concat (org-media-note--current-media-type)
+                             (if org-media-note-use-refcite-first
+				 "cite"))))
+       (if (org-media-note--ab-loop-p)
           ;; ab-loop link
           (let ((time-a (org-media-note--seconds-to-timestamp (mpv-get-property "ab-loop-a")))
                 (time-b (org-media-note--seconds-to-timestamp (mpv-get-property "ab-loop-b"))))
@@ -811,14 +810,12 @@ This list includes the following elements:
 
 (defun org-media-note--link-base-file (file-path)
   "Return base file for FILE-PATH."
-  (if (org-media-note-ref-cite-p)
-      (concat "&" ; default to org-ref-cite-insert-version == 3
-	      (org-media-note--current-org-ref-key))
-    (or (and org-media-note-use-refcite-first
-	     (org-media-note-lookup-citation-for-file file-path))
-	(if (org-media-note--online-video-p file-path)
-	    file-path
-	  (org-media-note--format-file-path file-path)))))
+  (or (and org-media-note-use-refcite-first
+	   (concat "&" ; default to org-ref-cite-insert-version == 3
+		   (org-media-note-lookup-citation-for-file file-path)))
+      (if (org-media-note--online-video-p file-path)
+	  file-path
+	(org-media-note--format-file-path file-path))))
 
 (defun org-media-note--link-formatter (string map)
   "Return a copy of STRING with replacements from MAP.
