@@ -142,6 +142,11 @@
       (error "Cannot find media file for this Key"))
      (t (org-media-note--follow-link file-path-or-url time-a time-b)))))
 
+(defvar org-media-note-bypass-realpath t
+  "Don't use file-truename to resolve media file locations, as this may resolve
+to a filename which is not identical to the file field in the bibliography,
+and reverse lookups may fail.")
+
 (defun org-media-note-get-media-file-by-key (key)
   "Get media file by KEY."
   (let* ((files (bibtex-completion-find-pdf key))
@@ -155,12 +160,16 @@
                                                      eos)
                                                  elt))
                                   files)))
+
+
+    (cl-letf (((symbol-function 'file-truename)
+	       (if org-media-note-bypass-realpath
+		   #'identity #'file-truename)))
     (cond
      ;; TODO when multiple media files?
      (video-files (file-truename (nth 0 video-files)))
      (audio-files (file-truename (nth 0 audio-files)))
-     (t nil))))
-
+     (t nil)))))
 
 (defun org-media-note-get-url-by-key (key)
   "Get URL by KEY."
