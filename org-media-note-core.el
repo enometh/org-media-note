@@ -622,7 +622,7 @@ This list includes the following elements:
 (defun org-media-note--ui-ab-loop-title ()
   (let ((time-a (mpv-get-property "ab-loop-a"))
         (time-b (mpv-get-property "ab-loop-b")))
-    (if (org-media-note--ab-loop-p)
+    (if (and (numberp time-a) (numberp time-b)) ;(org-media-note--ab-loop-p)
         (concat "Clear AB-loop "
                 (org-media-note--ui-hightlight (format "(%s-%s)"
                                                        (org-media-note--seconds-to-timestamp time-a)
