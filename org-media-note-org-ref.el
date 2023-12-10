@@ -115,7 +115,7 @@
 
 (defcustom org-media-note-cite-keymap
   (let ((map (copy-keymap org-mouse-map)))
-    (define-key map (kbd "H-o") 'org-media-note-open-ref-cite-function)
+    (define-key map (kbd "s-o") 'org-media-note-open-ref-cite-function)
     map)
   "Keymap for cite links."
   :type 'symbol
