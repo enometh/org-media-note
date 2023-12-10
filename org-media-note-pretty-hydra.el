@@ -44,7 +44,7 @@
      (mpv-run-command "ab-loop")
      (let ((time-a (mpv-get-property "ab-loop-a"))
            (time-b (mpv-get-property "ab-loop-b")))
-       (if (org-media-note--ab-loop-p)
+       (if (and (numberp time-a) (numberp time-b)); (org-media-note--ab-loop-p)
            (format "Clear AB-loop (%s-%s)"
                    (org-media-note--seconds-to-timestamp time-a)
                    (org-media-note--seconds-to-timestamp time-b))
