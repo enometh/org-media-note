@@ -12,7 +12,7 @@
 ;;; Code:
 ;;;; Requirements
 (require 'seq)
-(require 'org-ref)
+(require 'org-ref-core)
 
 (require 'org-media-note-core)
 
