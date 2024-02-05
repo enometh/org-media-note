@@ -753,6 +753,14 @@ This list includes the following elements:
     (when org-media-note-pause-after-insert-link
       (mpv-pause))))
 
+(defvar org-media-note--insert-link-text-p nil
+  "if NIL don't insert the link text")
+
+(defun %omn-maybe-insert-link-text (str)
+  (if org-media-note--insert-link-text-p
+      (concat "[" str "]")
+    ""))
+
 (defun org-media-note--link ()
   "Return media link."
   (cl-multiple-value-bind (file-path filename timestamp)
@@ -764,25 +772,27 @@ This list includes the following elements:
           ;; ab-loop link
           (let ((time-a (org-media-note--seconds-to-timestamp (mpv-get-property "ab-loop-a")))
                 (time-b (org-media-note--seconds-to-timestamp (mpv-get-property "ab-loop-b"))))
-            (format "[[%s:%s#%s-%s][%s]]"
+            (format "[[%s:%s#%s-%s]%s]"
                     link-type
                     (org-media-note--link-base-file file-path)
                     time-a
                     time-b
+		   (%omn-maybe-insert-link-text
                     (org-media-note--link-formatter org-media-note-ab-loop-link-format
                                                     `(("filename" . ,filename)
                                                       ("ab-loop-a" . ,time-a)
                                                       ("ab-loop-b" . ,time-b)
-                                                      ("file-path" . ,file-path)))))
+                                                      ("file-path" . ,file-path))))))
         ;; timestamp link
-        (format "[[%s:%s#%s][%s]]"
+        (format "[[%s:%s#%s]%s]"
                 link-type
                 (org-media-note--link-base-file file-path)
                 timestamp
+	       (%omn-maybe-insert-link-text
                 (org-media-note--link-formatter org-media-note-timestamp-link-format
                                                 `(("filename" . ,filename)
                                                   ("timestamp" . ,timestamp)
-                                                  ("file-path" . ,file-path))))))))
+                                                  ("file-path" . ,file-path)))))))))
 
 (defun org-media-note--ab-loop-p ()
   "Whether in ab-loop?"
