@@ -1289,6 +1289,54 @@ If TIME-B is non-nil, loop media between TIME-A and TIME-B."
         (kill-new command)
         (message (format "Copied: %s" command))))))
 
+;; glue to mpv.el playback positions, see mpv-seek-to-position-point
+;; and mpv-insert-playback-position. support mpv.el wiki comment (see
+;; https://github.com/kljohann/mpv.el/wiki retrieved on 2023-03-25)
+;;
+;; QUOTE
+;; In my transcriptions I use the description list format of
+;; org-timer-item:
+;; - 0:02:21 :: Finding the smallest and second smallest element.
+;; UNQUOTE
+
+
+(defun org-media-note-insert-playback-position (&optional arg)
+  "Insert playback position at point as a timer list item like
+`org-timer-item'.
+
+If ARG is non-NIL insert a playback position as a plain timestamp
+h:mm:ss."
+  (interactive "P")
+  (mpv-insert-playback-position (not arg)))
+
+(defun org-media-note-seek-to-playback-position (&optional _arg)
+  "See `mpv-seek-to-position-at-point'"
+  (interactive "P")
+  (mpv-seek-to-position-at-point))
+
+(defun org-media-note-next-playback-position (&optional arg)
+  "Navigate to the next playback position (represented as an mpv hms
+timestamp) and seek to the position of the playing media.
+
+If ARG is non-NIL do not seek"
+  (interactive "P")
+  (when (re-search-forward "[0-9]+:[0-9]+:[0-9]+" nil t)
+    (unless arg (org-media-note-seek-to-playback-position))
+    (org-fold-show-entry)
+    (recenter)))
+
+(defun org-media-note-previous-playback-position (&optional arg)
+  "Navigate to the previous playback position (represented as an mpv hms
+timestamp) and seek to the position of the playing media.
+
+If ARG is non-NIL do not seek"
+  (interactive "P")
+  (when (re-search-backward "[0-9]+:[0-9]+:[0-9]+" nil t)
+    (unless arg (org-media-note-seek-to-playback-position))
+    (org-fold-show-entry)
+    (recenter)))
+
+
 ;;;; Footer
 (provide 'org-media-note-core)
 ;;; org-media-note-core.el ends here
