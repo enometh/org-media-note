@@ -65,4 +65,10 @@
 (require 'sl-rec)
 ;; how to use it: see comments in the worked out in `sl-rec-fzp.el'
 
+(require 'omn-compile-media)
+;; select a region containing org-media-note org-ref cites (with
+;; timestamp-intervals), M-x omn-compile-media, and enter an output
+;; file name at the prompt: the the video/audio fragments will be
+;; compiled into the single output media file.
+
 #+end_src
