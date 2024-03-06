@@ -52,6 +52,14 @@
 	    org-ref-cite-types
 	    :test (lambda (a b) (equal (car a) (car b))))
 
+;;madhu 240306 patch org-ref org-ref-citation-key-re org-ref-label-re
+;; org-ref-label-link-re to remove `#' from the list of allowed
+;; characters in the key and label
+
+(setf (plist-get (cdr (assoc "pdfcite" org-link-parameters)) :activate-func)
+      #'org-ref-cite-activate)
+
+
 (defun org-pdf-cite-open (link)
   (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
 	 (pos (cl-position ?# link))
