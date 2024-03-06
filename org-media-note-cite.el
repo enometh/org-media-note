@@ -229,6 +229,10 @@ and reverse lookups may fail.")
 
 ;;;;; Setup
 
+;;  (plist-get (cdr (assoc "audiocite" org-link-parameters)) :activate-func)
+;;  (plist-get (cdr (assoc "videocite" org-link-parameters)) :activate-func)
+;;  (plist-get (cdr (assoc "videocite" org-link-parameters)) :export)
+
 ;;;###autoload
 (defun org-media-note-cite-setup ()
   "Set org link parameters for video/audiocite links."
@@ -239,7 +243,13 @@ and reverse lookups may fail.")
   (when org-media-note-use-org-ref
     (dolist (link '("videocite" "audiocite"))
       (org-link-set-parameters link
-			       :keymap #'org-media-note-cite-keymap)))
+			       :keymap #'org-media-note-cite-keymap)
+      (cl-pushnew (cons link
+			(list "org-media-note extensions via org-media-note"))
+		  org-ref-cite-types
+		  :test (lambda (a b) (equal (car a) (car b))))
+      (setf (plist-get (cdr (assoc link org-link-parameters)) :activate-func)
+	    #'org-ref-cite-activate)))
   ;; Display media link description in minibuffer when cursor is over it.
   (when (fboundp 'org-eldoc-documentation-function)
     (advice-add #'org-eldoc-documentation-function
