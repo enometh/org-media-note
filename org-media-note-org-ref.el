@@ -35,15 +35,54 @@
           (fill-paragraph)
           (buffer-string))))))
 
+;; ;madhu 240318 to version 2
+;; modify org-ref-cite-activate in   org-ref/org-ref-citation-links.el; in the version 2 branch to set
+;;	 (setq substrings (cl-loop for key in substrings for p = (cl-position ?\# key) if p collect (cl-subseq key 0 p) else collect p))
+
+;; ;madhu 240318 - unconditionally modify the way org-ref activates
+;; citation keys to include `#' this only works for version 3. for
+;; version 2 add an advice.
+
+(setq org-ref-citation-key-re
+  (rx-to-string
+   ;; '(seq "&" (group-n 1 (one-or-more (any word "-.:?!`'/*@+|(){}<>&_^$#%~"))))
+   '(seq "&" (group-n 1 (one-or-more (any word "-.:?!`'/*@+|(){}<>&_^$%~"))))))
+
+(defun org-media-note-ref--org-ref-arse-cite-path--around-advice (orig-function path)
+  (let* ((ret (funcall orig-function path))
+	 (keys (plist-get ret :references)))
+    (when (eql (plist-get ret :version) 2)
+      (cl-loop for elt in keys
+	       for key = (plist-get elt :key)
+	       for p = (cl-position ?\# key)
+	       if p do (setf (plist-get elt :key) (cl-subseq key 0 p))))
+    ret))
+
+(defvar org-media-note-working-with-kluged-org-ref-p
+  (cl-every (lambda (re) (not (cl-find ?\# re)))
+	 (list org-ref-citation-key-re
+	       ;; org-ref-label-re
+	       ;;org-ref-label-link-re
+	       ))
+  "Non-NIL if org-ref has been modified to reject `#' as a part of a path")
+
+(when org-media-note-working-with-kluged-org-ref-p
+  (advice-add 'org-ref-parse-cite-path :around
+	      'org-media-note-ref--org-ref-arse-cite-path--around-advice))
+
 ;; compat
 (defun org-media-note-ref-parse-path (path)
   "try to handle org-ref  v3 syntax"
-  (let* ((cite (org-ref-parse-cite-path path))
+  (let* ((pos (cl-position ?\# path))
+	 (cite (org-ref-parse-cite-path path))
 	 (references (plist-get cite :references))
-	 (keys (cl-loop for ref in references collect
-			(plist-get ref :key))))
-    ;; XXX return the first key
-    (car keys)))
+	 ;; XXX return the first key
+	 (ref (car references)))
+    (if (eql (plist-get cite :version) 3)
+	(if (and pos org-media-note-working-with-kluged-org-ref-p)
+	    (concat (plist-get ref :key) (plist-get ref :suffix))
+	  (plist-get ref :key))
+      (concat (plist-get ref :key) (and pos (cl-subseq path pos))))))
 
 (defun org-media-note-ref-cite (ref-cite-key)
   (if (fboundp 'org-ref-format-entry)
@@ -178,13 +217,23 @@ and reverse lookups may fail.")
         (bibtex-completion-get-value "url" entry))))
 ;;;;; Setup
 
+;;  (plist-get (cdr (assoc "audiocite" org-link-parameters)) :activate-func)
+;;  (plist-get (cdr (assoc "videocite" org-link-parameters)) :activate-func)
+;;  (plist-get (cdr (assoc "videocite" org-link-parameters)) :export)
+
 ;;;###autoload
 (defun org-media-note-setup-org-ref ()
   "Set org link parameters for video/audiocite links."
   (dolist (link '("videocite" "audiocite"))
     (org-link-set-parameters link :follow 'org-media-note-media-cite-link-follow
                              :keymap org-media-note-cite-keymap
-                             :help-echo #'org-media-note-help-echo))
+                             :help-echo #'org-media-note-help-echo)
+    (cl-pushnew (cons link
+		      (list "org-media-note extensions via org-media-note"))
+		org-ref-cite-types
+		:test (lambda (a b) (equal (car a) (car b))))
+    (setf (plist-get (cdr (assoc link org-link-parameters)) :activate-func)
+	  #'org-ref-cite-activate))
 
   ;; Display media link description in minibuffer when cursor is over it.
   (when (fboundp 'org-eldoc-documentation-function) ;;madhu 230422 gonn on FIXME
