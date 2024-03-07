@@ -149,4 +149,39 @@ for `bib-entry' since the entry will need a `key'.")
 				       (file-name-nondirectory file)
 				       (file-name-directory file))))))
 
+
+(defun sl-rec--org-media-note-cite--file-path-around-advice
+    (orig-fn key)
+  "This function is suitable as an `around advice' for
+`org-media-note-cite--file-path'.  This advice can be turned on through
+`advice-add' after that function is loaded.  It extracts the media file
+associated with the org-ref bibtex key if it does not exist at location NOTE
+`$sl-recs' and `bibtex-completion-bibliography' have to be correctly defined
+when this advice gets called."
+  (let ((ret (funcall orig-fn key)))
+    (cond (ret ret)
+	  (t (message "will try to sl-rec-extract key %s" key)
+	     (sl-rec-extract-file-from-zip key)
+	     (message "trying again...")
+	     (prog1 (setq ret (funcall orig-fn key))
+	       (when ret (message "success")))))))
+
+(define-minor-mode sl-rec--auto-unpack-mode "unpack media files on the fly"
+  :global t
+  :init-value t
+  (if sl-rec--auto-unpack-mode
+      (advice-add 'org-media-note-cite--file-path :around
+		  #'sl-rec--org-media-note-cite--file-path-around-advice)
+    (advice-remove 'org-media-note-cite--file-path
+		   #'sl-rec--org-media-note-cite--file-path-around-advice)))
+
+;; 250129 -- emacs bug? define-minor-mode was defined with  global t init-value is t, at this point emacs considers the mode globally enabled yet the init function has not run. if emacs were correct it should not be necessary for the next line to call (sl-rec--auto-unpack-mode 1)
+(sl-rec--auto-unpack-mode 1)
+
+(when nil
+(advice-remove 'org-media-note-cite--file-path
+	       #'sl-rec--org-media-note-cite--file-path-around-advice)
+(advice-add 'org-media-note-cite--file-path :around
+	    #'sl-rec--org-media-note-cite--file-path-around-advice))
+
 (provide 'sl-rec)
