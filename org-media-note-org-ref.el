@@ -184,7 +184,8 @@ and reverse lookups may fail.")
 
 (defun org-media-note-cite--file-path (key)
   "Get media file by KEY."
-  (let* ((files (bibtex-completion-find-pdf key))
+  (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+	 (files (bibtex-completion-find-pdf key))
          (video-files (seq-filter (lambda (elt)
                                     (s-matches-p (rx (eval (cons 'or org-media-note--video-types))
                                                      eos)
