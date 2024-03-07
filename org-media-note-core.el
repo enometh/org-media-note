@@ -449,8 +449,8 @@ This list includes the following elements:
 - current reference key, if available.
 - associated media file for the current ref key, if any.
 - associated media URL for the current ref key, if any."
-  (let ((key (org-media-note--current-org-ref-key)))
-    (if (org-media-note-ref-cite-p)
+  (when-let ((key (org-media-note--current-org-ref-key)))
+    (if org-media-note-use-org-ref ;;(org-media-note-ref-cite-p) ;madhu 240308
         (list t
               key
               (org-media-note-get-media-file-by-key key)
@@ -498,8 +498,8 @@ This list includes the following elements:
                      (start-time (if (member link-type '("audio" "video" "audiocite" "videocite"))
                                      (let* ((timestamps (nth 1
                                                              (split-string link-path "#")))
-                                            (time-a (nth 0
-                                                         (split-string timestamps "-"))))
+                                            (time-a (or (and timestamps (nth 0 (split-string timestamps "-")))
+							0)))
                                        (org-media-note--timestamp-to-seconds time-a))
                                    0)))
                 (list link-type file-path-or-url start-time))
@@ -524,8 +524,8 @@ This list includes the following elements:
 - Media file path
 - Media file name
 - Timestamp"
-  (let* ((path (mpv-get-property "path"))
-         (name (if (org-media-note-ref-cite-p)
+  (when-let* ((path (mpv-get-property "path"))
+         (name (if org-media-note-use-org-ref ;;(org-media-note-ref-cite-p) ;madhu 240308
                    (let* ((ref-key (org-media-note--current-org-ref-key))
                           (bib-entry (bibtex-completion-get-entry ref-key))
                           (title (bibtex-completion-get-value "title" bib-entry)))
