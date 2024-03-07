@@ -481,7 +481,7 @@ This list includes the following elements:
 - use `org-ref' mode or not.
 - current reference key, if available.
 - associated media file or URL for the current ref key, if any."
-  (let ((key (org-media-note--current-citation-key)))
+  (when-let* ((key (org-media-note--current-citation-key)))
     (if (org-media-note-ref-cite-p)
         (list t
               key
