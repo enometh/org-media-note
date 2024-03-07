@@ -463,7 +463,7 @@ This list includes the following elements:
 - current reference key, if available.
 - associated media file for the current ref key, if any.
 - associated media URL for the current ref key, if any."
-  (let ((key (org-media-note--current-citation-key)))
+  (when-let* ((key (org-media-note--current-citation-key)))
     (if (org-media-note-ref-cite-p)
         (list t
               key
