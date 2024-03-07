@@ -51,7 +51,8 @@ subsequent file in the list is not found."
 ;;;
 ;;;
 ;;;
-(maybe-load-colocated-files nil "load-prereqs.el"
+(maybe-load-colocated-files t "track-requires.el"
+			    nil "load-prereqs.el"
 			    t   "config.el"
 			    nil "local-overrides.el")
 

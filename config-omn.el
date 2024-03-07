@@ -22,9 +22,15 @@
     (require 'org-pdf-open)))
 
 (use-package omn-transient
+  :init (setq org-ref-ins 'org-ref-insert-link)
   :bind ("s-v" . 'omn-transient))
 
 (use-package or-transient
+  :init
+  (setq org-ref-insert-cite-function 'org-ref-insert-cite-link)
+  (setq org-ref-insert-ref-function 'org-ref-insert-ref-link)
+  (setq org-ref-insert-label-function 'org-ref-insert-label-link)
+  (setq org-ref-cite-onclick-function (lambda(_) (org-ref-citation-transient)))
   :bind ("s-]" . or-insert-link-transient))
 
 (use-package orb-transient

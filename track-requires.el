@@ -38,11 +38,15 @@
 *track-requires* buffer."
   :lighter nil
   :global t
-  :init-value t
+  :init-value nil
   (cond (track-requires-mode
+	 (message "enabling track requires mode")
 	 (advice-add 'require :around #'track-requires-around-advice))
 	(t
+	 (message "disabling track requires mode")
 	 (advice-remove 'require #'track-requires-around-advice))))
+
+(track-requires-mode 1)
 
 (provide 'track-requires)
 

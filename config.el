@@ -20,12 +20,16 @@
   ;;(setq bibtex-unify-case-function 'identity)
   (setq bibtex-unify-case-function 'downcase)
   ;;(setq bibtex-entry-format '(opts-or-alts required-fields numerical-fields))
-  (setq bibtex-entry-format '(opts-or-alts ; required-fields
-			      unify-case
+  (setq bibtex-entry-format '(
+			      last-comma
 			      numerical-fields
-			      whitespace
+			      opts-or-alts
+			      realign
+			      ;; required-fields
 			      sort-fields
-			      realign)))
+			      unify-case
+			      whitespace
+			      )))
 
 ;;(cl-assert (featurep 'bibtex-completion))
 (locate-library "bibtex-completion")
