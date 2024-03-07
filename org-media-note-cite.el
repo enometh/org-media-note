@@ -154,7 +154,11 @@ and reverse lookups may fail.")
   "Get URL by KEY."
   (setq key (if (eql (elt key 0) ?&) (substring key 1) key))
   (if key
-      (let ((entry (bibtex-completion-get-entry1 key t)))
+      (let* ((bibtex-completion-bibliography
+	      (if org-media-note-use-org-ref
+		  (org-ref-find-bibliography)
+		bibtex-completion-bibliography))
+	     (entry (bibtex-completion-get-entry1 key t)))
         (bibtex-completion-get-value "url" entry))))
 ;;;;; Setup
 
