@@ -38,7 +38,6 @@ subsequent file in the list is not found."
 
 (cl-defmacro with-temp-load-paths ((&rest paths) &body body)
   (declare (indent 1))
-  (unless (consp (car paths)) (setq paths (list paths)))
   `(let ((load-path load-path))
      ,@(mapcar (lambda (path)
 		 `(add-to-list 'load-path ,path))
