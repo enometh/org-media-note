@@ -1122,7 +1122,7 @@ TIME-A and TIME-B indicate the start and end of a playback loop."
         (progn
           (if time-a
               (message "open %s@t=%s..." path time-a)
-            (message "open %s..." path))
+            (message "%s" (format "open %s..." path)))
           (apply 'mpv-start
                  path
                  (org-media-note--build-mpv-args path time-a
