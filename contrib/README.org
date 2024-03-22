@@ -57,6 +57,11 @@
 ;; (advice-remove  'org-ref-cite-follow 'org-ref-cite-follow-override-advice)
 ;; (advice-add 'org-ref-cite-follow :override 'org-ref-cite-follow-override-advice)
 
+;; ** OMN-PLAYBACK-POSITIONS
+(require 'omn-mpv-playback-position-transient)
+;; (keymap-set org-mode-map "s-l" 'org-ref-bibtex-hydra/body)
+
+
 ;;; * Misc contribs
 
 (require 'org-pdf-open)
