@@ -19,6 +19,7 @@
     (require 'omn-transient)
     (require 'orc-transient)
     (require 'or-transient)
+    (require 'orb-transient)
     (require 'org-pdf-open)))
 
 (use-package omn-transient
