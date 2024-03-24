@@ -26,9 +26,9 @@
 			      opts-or-alts
 			      realign
 			      ;; required-fields
-			      sort-fields
 			      unify-case
 			      whitespace
+			      sort-fields
 			      )))
 
 ;;(cl-assert (featurep 'bibtex-completion))
