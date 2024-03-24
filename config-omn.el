@@ -20,7 +20,9 @@
     (require 'orc-transient)
     (require 'or-transient)
     (require 'orb-transient)
-    (require 'org-pdf-open)))
+    (require 'org-pdf-open)
+    (require 'omn-mpv-playback-positions-transient)
+    ))
 
 (use-package omn-transient
   :init (setq org-ref-ins 'org-ref-insert-link)
