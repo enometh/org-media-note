@@ -972,8 +972,7 @@ Combine the following options:
                                             )))
             (if pair
                 (setcdr pair new-value)
-              (add-to-list 'key-value-options-alist
-                           (cons key new-value))))
+	      (cl-pushnew  (cons key new-value) key-value-options-alist :test #'cl-equalp)))
         (push option other-options)))
     ;; Combine all options together
     (append other-options
