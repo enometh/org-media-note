@@ -499,7 +499,7 @@ This list includes the following elements:
                                      (let* ((timestamps (nth 1
                                                              (split-string link-path "#")))
                                             (time-a (or (and timestamps (nth 0 (split-string timestamps "-")))
-							0)))
+							"0")))
                                        (org-media-note--timestamp-to-seconds time-a))
                                    0)))
                 (list link-type file-path-or-url start-time))
