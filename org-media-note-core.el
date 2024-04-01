@@ -926,7 +926,8 @@ TIME-A and TIME-B indicate the start and end of a playback loop."
         (progn
           (message "%s" (format "open %s..." path))
           (apply 'mpv-start path
-                 (append (list (concat "--start=+" time-a))
+                 (append (unless (equal time-a "0")
+			   (list (concat "--start=+" time-a)))
                          (when time-b
                            (list (concat "--ab-loop-a=" time-a)
                                  (concat "--ab-loop-b=" time-b)))
