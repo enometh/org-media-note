@@ -1134,7 +1134,7 @@ TIME-A and TIME-B indicate the start and end of a playback loop."
 (defun org-media-note--build-mpv-args (path time-a time-b)
   "Build the argument list for `mpv-start`."
   (let ((extra-mpv-options (org-media-note--mpv-options path)))
-    (append (when time-a
+    (append (when (and time-a (not (equal time-a "0")))
               (list (concat "--start=+" time-a)))
             (when time-b
               (list (concat "--ab-loop-a=" time-a)
