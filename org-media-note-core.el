@@ -513,7 +513,8 @@ This list includes the following elements:
                                       (concat "https://youtu.be/" link-path))
                                      (t nil))))
                   (list link-type path-or-url nil nil)))
-            (list link-type link-path nil nil)))
+            ;;(list link-type link-path nil nil)
+	    (list nil nil nil nil)))
       (list nil nil nil nil))))
 
 (defun org-media-note--split-link (link)
