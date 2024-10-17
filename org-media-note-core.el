@@ -540,7 +540,7 @@ This list includes the following elements:
         (if cite-path
             (list "citation" cite-path nil nil)
           (list nil nil nil nil))))
-     
+     ;; ;madhu 251113 - fixed in 3593ed #71?
      ;; Default case: no relevant element found
      (t (list nil nil nil nil)))))
 
