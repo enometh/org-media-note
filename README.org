@@ -1,0 +1,44 @@
+-*- Org -*-
+
+* org-ref-publish-config -- personal configuration for org-publish
+
+This project should collect together the names of all the
+pre-requisites (i.e. dependencies) [[./load-prereqs.el]] and the
+personal configuration [[./config.el]] that I need in order to call
+`org-publish' on some org project.  In particular it should provide a
+file [[./async-init.el]] I can set as the value of
+`org-export-async-init' which org-publish can use to load into a fresh
+clean emacs session.
+
+It includes some dubious hacks. There is a package to track requires
+[[./track-requires.el]] to crudely visualise the order in which the
+dependencies get loaded.  Another goal is to let dependecies be loaded
+from custom locations, where I have control over the versions.  This
+involves restricting the `load-path', through the functions
+`maybe-load-colocated-files' and `with-temp-load-paths' (which are
+found at the top of [[./async-init.el]]
+
+*** Export Documentation
+#+begin_src elisp
+;; export to html
+(setq org-export-async-init-file
+      (file-name-concat default-directory "async-init.el"))
+(org-publish `("org-ref-publish-example"
+	       :base-directory ,default-directory
+	       :exclude ".*"
+	       :include ("README.org")
+	       :publishing-function (org-ref-publish-to-html
+				     org-ref-publish-to-pdf)
+	       :publishing-directory "/dev/shm/build"
+	       :section-numbers nil)
+	     nil 'async)
+;; async export to html
+;; (org-html-export-to-html t)
+;; check the output
+;;(org-export-stack)
+#||
+mkdir /dev/shm/build
+rm -fv /dev/shm/build/*
+||#
+#+end_src
+
