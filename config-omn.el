@@ -10,6 +10,7 @@
 ;;
 ;; load and configure org-media-note extras
 
+(let (($pkg-root (or $omn-alt-pkg-root $pkg-root)))
 (unless (locate-library "orc-transient")
   (let ((load-path load-path))
     (add-to-list 'load-path
@@ -21,7 +22,7 @@
     (require 'orb-transient)
     (require 'org-pdf-open)
     (require 'omn-mpv-playback-positions-transient)
-    ))
+    )))
 
 (use-package or-transient
   :init
