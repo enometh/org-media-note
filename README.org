@@ -1,3 +1,11 @@
+#+TITLE: org ref publish elisp config
+#+AUTHOR: Madhu
+#+DATE: [2024-10-30]
+#+OPTIONS: toc:nil ^:{}
+#+latex_class: article
+#+latex_header: \usepackage[style=authoryear-icomp,backend=biber,natbib=true]{biblatex}
+#+latex_header: \addbibresource{/dev/shm/sample-org-ref.bib}
+#+latex_header: \hypersetup{linktocpage=true,pdfstartview=FitH,colorlinks,linkcolor=blue,anchorcolor=blue,citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue}
 -*- Org -*-
 
 * org-ref-publish-config -- personal configuration for org-publish
@@ -42,3 +50,18 @@ rm -fv /dev/shm/build/*
 ||#
 #+end_src
 
+** Org media note Cheatsheet.
+the file [[./config-omn.el]] loads and configures the transient
+interfaces I use with org-media-note and org-ref.
+
+** Org ref Cheatsheet
+maintain your bib-tex entries as org entries in an org bibtex file
+[[./sample-org-ref-bib.org]] and use the snippet in the comment there
+to export them to a bibtex file, say /dev/shm/sample-org-ref-bib.org.
+add an org-ref reference to that file.
+
+# nobibliography:/dev/shm/sample-org-ref.bib
+
+and insert a links with "s-]"  [[cite:&jkitchin76:online]]
+
+[[printbibliography:]]

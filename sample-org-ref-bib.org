@@ -1,0 +1,42 @@
+#+title: sample org-bibtex file for org-async-init
+
+*** COMMENT
+The contents of this file consists of sample entries extracted from
+org-ref.bib https://github.com/jkitchin/org-ref with
+`org-bibtex-read-file'
+
+Export the entries in this file to a temporary bibtex file with
+`org-bibtex'
+#+begin_src elisp
+(with-temp-buffer
+  (insert-file-contents "sample-org-ref-bib.org")
+  (org-mode)
+  (goto-char (point-min))
+  (org-bibtex "/dev/shm/sample-org-ref.bib"))
+#+end_src
+both `org-bibtex-read' and `org-bibtex' are from ol-bibtex.el shipped
+with org mode.
+
+
+*** jkitchin/org-ref: org-mode modules for citations, cross-references, bibliographies in org-mode and useful bibtex tools to go with it.
+:PROPERTIES:
+:TITLE:    jkitchin/org-ref: org-mode modules for citations, cross-references, bibliographies in org-mode and useful bibtex tools to go with it.
+:BTYPE:    misc
+:CUSTOM_ID: jkitchin76:online
+:AUTHOR:   John Kitchin
+:URL:      https://github.com/jkitchin/org-ref
+:URLDATE:  12/04/2016
+:END:
+
+*** The Org Mode 8 Reference Manual - Organize your life with GNU Emacs
+:PROPERTIES:
+:TITLE:    The Org Mode 8 Reference Manual - Organize your life with GNU Emacs
+:BTYPE:    book
+:CUSTOM_ID: Dominik201408
+:KEYWORDS: org-mode
+:URL:      http://amazon.com/o/ASIN/9881327709/
+:ISBN:     9789881327703
+:YEAR:     2014
+:PUBLISHER: Samurai Media Limited
+:AUTHOR:   Carsten Dominik
+:END:

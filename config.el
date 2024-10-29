@@ -100,7 +100,7 @@
   (setq org-latex-pdf-process '("latexmk -verbose -f -pdf -%latex -interaction=nonstopmode -bibtex -output-directory=%o %f"))
   (setq org-latex-pdf-process
 	'("pdflatex -interaction nonstopmode -output-directory %o %f"
-	  "bibtex %b"
+	  "biber %b"
 	  "makeglossaries %b"
 	  "pdflatex -interaction nonstopmode -output-directory %o %f"
 	  "pdflatex -interaction nonstopmode -output-directory %o %f"))
