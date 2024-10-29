@@ -43,7 +43,9 @@
      (file-name-concat $pkg-root "org-ref")
      (file-name-concat "~/.emacs.d/elpa/queue-0.2/")
      (file-name-concat $pkg-root "avy"))
-  (require 'org-ref-core))
+  (require 'org-ref-core)
+  ;; use org-ref-publish from org-ref
+  (require 'org-ref-publish))
 
 (with-temp-load-paths ((file-name-concat $pkg-root "mpv.el"))
   (require 'mpv))
@@ -53,8 +55,9 @@
      (file-name-concat $pkg-root "org-media-note" "contrib"))
   (require 'org-media-note)
   (require 'org-media-note-org-ref)
-  ;; contrib
-  (require 'org-ref-publish))
+  ;; obsolete
+  ;; (require 'org-ref-publish)
+  )
 
 
 ;;;
