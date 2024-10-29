@@ -125,6 +125,7 @@
 (use-package org-media-note
   :init
   (setq org-media-note-use-org-ref t)
+  :bind ("s-v" . org-media-note-ui-transient)
   :hook (org-mode . org-media-note-mode)
   :config
   (setq org-media-note-pause-after-insert-link nil)

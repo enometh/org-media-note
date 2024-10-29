@@ -57,6 +57,7 @@
   (require 'org-media-note-org-ref)
   ;; obsolete
   ;; (require 'org-ref-publish)
+  (require 'org-media-note-ui-transient)
   )
 
 

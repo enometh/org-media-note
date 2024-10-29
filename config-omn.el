@@ -10,23 +10,18 @@
 ;;
 ;; load and configure org-media-note extras
 
-(unless (locate-library "omn-transient")
+(unless (locate-library "orc-transient")
   (let ((load-path load-path))
     (add-to-list 'load-path
 		 (file-name-concat $pkg-root "org-media-note"))
     (add-to-list 'load-path
 		 (file-name-concat $pkg-root "org-media-note" "contrib"))
-    (require 'omn-transient)
     (require 'orc-transient)
     (require 'or-transient)
     (require 'orb-transient)
     (require 'org-pdf-open)
     (require 'omn-mpv-playback-positions-transient)
     ))
-
-(use-package omn-transient
-  :init (setq org-ref-insert-link-function 'org-ref-insert-link)
-  :bind ("s-v" . 'omn-transient))
 
 (use-package or-transient
   :init
