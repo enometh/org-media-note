@@ -17,7 +17,8 @@
 
 (defun track-requires-around-advice (orig-fn feature &optional filename no-error)
   (push feature $track-requires-stack)
-  (let ((messages-buffer-name "*track requires*")
+  (let ((messages-buffer-name (buffer-name (get-buffer-create "*track requires*")))
+	(message-log-max t)
 	present-p ret pad)
     (unless (setq present-p (featurep feature))
       (message "%srequired %s"

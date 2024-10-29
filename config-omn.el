@@ -25,7 +25,7 @@
     ))
 
 (use-package omn-transient
-  :init (setq org-ref-ins 'org-ref-insert-link)
+  :init (setq org-ref-insert-link-function 'org-ref-insert-link)
   :bind ("s-v" . 'omn-transient))
 
 (use-package or-transient
