@@ -125,11 +125,15 @@
 (use-package org-media-note
   :init
   (setq org-media-note-use-org-ref t)
-  :bind ("s-v" . org-media-note-ui-transient)
   :hook (org-mode . org-media-note-mode)
   :config
   (setq org-media-note-pause-after-insert-link nil)
   (setq org-media-note-use-refcite-first t))
+
+
+(use-package org-media-note-ui-transient
+  :init
+  :bind ("s-v" . org-media-note-transient))
 
 (use-package org-media-note-org-ref
   :config
