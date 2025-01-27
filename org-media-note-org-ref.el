@@ -105,4 +105,20 @@
   (advice-add 'org-ref-parse-cite-path :around
 	      'org-media-note-ref--org-ref-arse-cite-path--around-advice))
 
+
+;;;
+;;; advice org-ref-find-bibliography in org src buffers
+;;;
+;;madhu 250128
+(defun org-ref-find-bibliography-in-org-src-buffer-around-advice
+    (orig)
+  (with-current-buffer (if (org-src-edit-buffer-p)
+			   (org-src-source-buffer)
+			 (current-buffer))
+    (funcall orig)))
+
+(advice-add 'org-ref-find-bibliography :around 'org-ref-find-bibliography-in-org-src-buffer-around-advice)
+;;  to remove all advice (advice-mapc (lambda (advice _props) (advice-remove symbol advice)) 'org-ref-find-bibliography-in-org-src-buffer-around-advice)
+;; (advice-get-all 'org-ref-find-bibliography)
+
 (provide 'org-media-note-org-ref)
