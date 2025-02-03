@@ -18,3 +18,11 @@ directory which are not usable with current org-media-note.
 
 #+end_src
 
+
+* Renamed functions
+#+begin_src elisp
+;; org-ref commit 55951f4ed  (2024-08-09)
+(defun org-media-note-get-media-file-by-key (key) (org-media-note-cite--file-path key))
+(defun org-media-note-get-url-by-key (key) (org-media-note-cite--url key))
+(defun org-media-note-media-cite-link-follow (key) (org-media-note-cite--open key))
+#+end_src
