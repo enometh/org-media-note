@@ -50,8 +50,8 @@
   "Main transient for org-media-note."
   :transient-suffix 'transient--do-stay
   :transient-non-suffix 'transient--do-leave
-  [:description org-media-note--ui-title
-                ["\nFile"
+  [:description org-media-note--ui-title ""]
+  [              ["\nFile"
                  ("o" org-media-note-play-smart
                   :description org-media-note--ui-play-smart-title
                   :transient nil)
@@ -64,7 +64,7 @@
                   :if (lambda ()
                         (and org-media-note-interface-display-browse-url
                              (org-media-note--url-at-point))))
-                 ""
+;;                 ""
                  ("T"
                   (lambda ()
                     (interactive)
@@ -81,7 +81,7 @@
                     (interactive)
                     (org-media-note-change-speed-by -0.1)))
                  ("z" "Reset speed" org-media-note-mpv-toggle-speed)
-                 ""
+;;                 ""
                  "Volume"
                  ("+" "Up"
                   (lambda ()
@@ -115,7 +115,7 @@
                     (mpv-run-command "ab-loop"))
                   :description org-media-note--ui-ab-loop-title)
                  ("g" "Jump to timestamp" org-media-note-goto-timestamp)
-                 ""
+;;                 ""
                  ("t <right>" org-media-note-set-seek-method
                   :description (lambda ()
                                  (concat "Seek step: "
@@ -163,19 +163,21 @@
                                  (concat "Auto insert item "
                                          (org-media-note--ui-toggle-state 'org-media-note-auto-insert-item))))
                  ("I" "Import from" org-media-note-import-transient)
-                 ""
+;;                 ""
                  ("s" "Insert subtitle" org-media-note-insert-sub-text)
                  ("j" "Toggle subtitle"
                   (lambda ()
                     (interactive)
                     (mpv-cycle-property "sub")))
-                 ""
+;;                 ""
                  ("H-m" "Merge items" org-media-note-merge-item)
                  ("tM" org-media-note-set-separator
                   :description (lambda ()
                                  (concat "Separator for merge: "
                                          (org-media-note--ui-hightlight org-media-note-separator-when-merge))))
-                 ""]
+;;                 ""
+		 ] ]
+  [
                 ["Note Format"
                  ("tt" org-media-note-toggle-timestamp-pattern
                   :description (lambda ()
@@ -187,7 +189,9 @@
                   :description (lambda ()
                                  (concat "citekey instead of path "
                                          (org-media-note--ui-toggle-state 'org-media-note-use-refcite-first))))
-                 ""
+;;                 ""
+		 ]
+		[
                  "Screenshot & Clip"
                  ("S"
                   (lambda ()
@@ -211,7 +215,9 @@
                   :description (lambda ()
                                  (concat "AB-loop clip: "
                                          (org-media-note--ui-hightlight (if org-media-note-capture-ab-loop-ask-each-time
-                                                                            "always ask" org-media-note-default-capture-ab-loop-function-name)))))]])
+                                                                            "always ask" org-media-note-default-capture-ab-loop-function-name)))))]
+		]
+		)
 
 (transient-define-prefix org-media-note-import-transient ()
   "Transient for org-media-note import commands."
