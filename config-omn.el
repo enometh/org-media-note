@@ -24,6 +24,12 @@
     (require 'omn-mpv-playback-positions-transient)
     )))
 
+;; obsolete ;;[Thu Oct 31 20:28:33 2024 +0530]
+(when nil
+(use-package omn-transient
+  :init
+  :bind ("s-v" . omn-transient)))
+
 (use-package or-transient
   :init
   (setq org-ref-insert-cite-function 'org-ref-insert-cite-link)
