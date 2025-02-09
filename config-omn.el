@@ -44,3 +44,6 @@
 (use-package orc-transient
   :bind ("s-c" . org-ref-citation-transient))
 
+(use-package omn-mpv-playback-positions-transient
+  :bind ("s-l" . 'omn-mpv-playback-positions-transient))
+
