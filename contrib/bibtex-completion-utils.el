@@ -2,9 +2,9 @@
 ;;;
 ;;; org-media-note/contrib/bibtex-completion-utils.el.  extra utils
 ;;; for bibtex-completion.el from
-;;; https://github.com/tmalsburg/helm-bibtex (checked commit 8ebf50d5b
-;;; from 2022-11-04)
-
+;;; https://github.com/tmalsburg/helm-bibtex (checked commit 6064e8625b295
+;;; from 2024-11-16)
+;; Package-Requires: ((parsebib "6.0"))
 ;;(require 'parsebib)
 (require 'bibtex-completion)
 
@@ -17,12 +17,16 @@
       (while
 	  (re-search-forward (concat "^[ \t]*@\\(" parsebib--bibtex-identifier
                                      "\\)[[:space:]]*[\(\{][[:space:]]*"
-                                     "\\(.+?\\)" ;; entry-key
+                                     ;; "\\(.+?\\)" entry-key pre 6.0
+				     "\\("  parsebib--bibtex-key-regexp "\\)"
 				     "[[:space:]]*,")
                              nil t)
-          (let* ((entry-type (match-string 1))
-		 (entry-key (match-string 2))
-		 (entry (parsebib-read-entry entry-type (point))))
-	    (funcall func entry-key entry))))))
+        (goto-char (match-beginning 0))	;not for pre 6.0
+        (let* ((_entry-type (match-string 1))
+	       (entry-key (match-string 2))
+	       (entry ;; (parsebib-read-entry _entry-type (point)) pre 6.0
+		(parsebib-read-entry nil bibtex-completion-string-hash-table)
+		))
+	  (funcall func entry-key entry))))))
 
 (provide 'bibtex-completion-utils)
