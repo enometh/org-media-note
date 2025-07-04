@@ -94,7 +94,14 @@
                             (cond
                              ((or (string= type "videocite")
                                   (string= type "audiocite"))
-                              (let* ((media-note-link (org-element-property :path object))
+                              (let* ((media-note-link
+				      (if org-media-note-use-org-ref
+					  (org-media-note-ref-parse-path
+					   (org-element-property :path object))
+					(let ((elt (org-element-property :path object)))
+					  (if (eql (elt elt 0) ?&)
+					      (setq elt (substring elt 1))
+					    elt))))
                                      (ref-cite-key (car (split-string media-note-link "#")))
                                      (hms (cdr (split-string media-note-link "#"))))
 				(format "%s @ %s"
@@ -103,10 +110,15 @@
 					    "??")
                                         hms))))))))))
 
+;madhu 251113 - we don't use citar, so don't go through that codepath
+(defvar org-media-note-support-citar nil)
 
 (defun org-media-note-cite-format-entry (key)
   "Returns a formatted bibtex entry for KEY."
-  (let ((entry (ignore-errors (org-media-note-cite-get-entry key))))
+  (setq key (if (eql (elt key 0) ?&) (substring key 1) key))
+  (let ((entry (ignore-errors (if org-media-note-support-citar
+				  (org-media-note-cite-get-entry key)
+				(bibtex-completion-get-entry key)))))
     (if (null entry)
         "!!! No entry found !!!"
       (let* ((series (org-media-note-cite-get-value key "series"))
@@ -169,7 +181,14 @@
 
 (defun org-media-note-cite--file-path (key)
   "Get media file by KEY."
-  (let* ((files (org-media-note-cite-get-files key))
+  (setq key (if (eql (elt key 0) ?&) (substring key 1) key))
+  (let* ((files (if org-media-note-support-citar
+		    (org-media-note-cite-get-files key)
+		  (let ((bibtex-completion-bibliography
+			 (if org-media-note-use-org-ref
+			     (org-ref-find-bibliography)
+			   bibtex-completion-bibliography)))
+		    (bibtex-completion-find-pdf key))))
 	 (video-files (org-media-note--filter-by-extensions files org-media-note--video-types))
 	 (audio-files (org-media-note--filter-by-extensions files org-media-note--audio-types)))
     (cond
@@ -194,6 +213,7 @@
 
 (defun org-media-note-cite--url (key)
   "Get URL by KEY."
+  (setq key (if (eql (elt key 0) ?&) (substring key 1) key))
   (if key
       (org-media-note-cite-get-value key "url")))
 

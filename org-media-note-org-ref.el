@@ -2,13 +2,22 @@
 ;; ;madhu 250704 - reinstate support for org-ref removed from org-media-note in 8d0d03a8
 (require 'org-ref-core)
 
+(defun org-media-note-ref-parse-path (path)
+  "try to handle org-ref  v3 syntax"
+  (let* ((cite (org-ref-parse-cite-path path))
+	 (references (plist-get cite :references))
+	 (keys (cl-loop for ref in references collect
+			(plist-get ref :key))))
+    ;; XXX return the first key
+    (car keys)))
 
 (defun org-media-note-open-ref-cite-function ()
   "Open a ref-cite link."
   (interactive)
   (let* ((object (org-element-context))
          (media-note-link (if (eq (org-element-type object) 'link)
-			      (org-element-property :path object)))
+			      (org-media-note-ref-parse-path
+			       (org-element-property :path object))))
          (ref-cite-key (car (split-string media-note-link "#"))))
     (with-temp-buffer
       (org-mode)
@@ -33,7 +42,8 @@
       (funcall 'org-ref-format-entry ref-cite-key)
     ;; ;madhu 230410 copied from org-ref/org-ref-citation-links.el:
     ;; (org-ref-cite-tooltip). FIXME refactor in org-ref.
-    (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+    (let* ((ref-cite-key (org-media-note-ref-parse-path ref-cite-key)) ;bad
+	   (bibtex-completion-bibliography (org-ref-find-bibliography))
            (has-pdf (when (bibtex-completion-find-pdf ref-cite-key)
                       bibtex-completion-pdf-symbol))
            (has-notes
