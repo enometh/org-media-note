@@ -485,7 +485,10 @@ This list includes the following elements:
 
 (defun org-media-note--split-link (link)
   "Split a `LINK' into path, time-a and time-b."
-  (let* ((splitted (split-string link "#"))
+  (let* ((link-1 (if org-media-note-use-org-ref
+		     (org-media-note-ref-parse-path link)
+		   link))
+	 (splitted (split-string link "#"))
          (path (nth 0 splitted))
          (timestamps (if (> (length splitted) 1)
                          (split-string (nth 1 splitted) "-")
