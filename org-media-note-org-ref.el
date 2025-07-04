@@ -54,4 +54,13 @@
       (format "%s%s %s" (or has-pdf "") (or has-notes "")
               (bibtex-completion-apa-format-reference ref-cite-key)))))
 
+(defun org-media-note--org-ref-key-from-cite ()
+  (let* ((object (org-element-context))
+	 (type (org-element-property :type object))
+	 (media-note-link (org-media-note-ref-parse-path
+			   (org-element-property :path object)))
+	 (ref-cite-key (car (split-string media-note-link "#"))))
+    (and ;; (cl-member type '("cite") :test #'equal)
+     ref-cite-key)))
+
 (provide 'org-media-note-org-ref)

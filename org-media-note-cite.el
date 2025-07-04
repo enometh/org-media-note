@@ -76,6 +76,8 @@
         (fill-paragraph)
         (buffer-string)))))
 
+(defvar org-media-note-link-types '("videocite" "audiocite"))
+
 (defun org-media-note-cite-link-message ()
   "Print a minibuffer message about the link that point is on."
   (interactive)
@@ -92,8 +94,7 @@
                                (type (org-element-property :type object)))
                           (save-excursion
                             (cond
-                             ((or (string= type "videocite")
-                                  (string= type "audiocite"))
+                             ((cl-find type org-media-note-link-types :test #'equal)
                               (let* ((media-note-link
 				      (if org-media-note-use-org-ref
 					  (org-media-note-ref-parse-path
