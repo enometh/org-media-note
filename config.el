@@ -121,23 +121,18 @@
   (setq mpv-default-options nil))
 
 ;;(cl-assert (featurep 'org-media-note))
-;;(cl-assert (featurep 'org-media-note-org-ref))
 (use-package org-media-note
   :init
+  (setq org-media-note-use-cite t)
   (setq org-media-note-use-org-ref t)
   :hook (org-mode . org-media-note-mode)
+  :bind ("s-v" . org-media-note-show-interface)
   :config
+  (setq org-media-note-use-refcite-first t)
+  (setq org-media-note-cite-format-fn #'org-media-note-cite-format-entry)
+  (setq org-media-note-bibtex-files nil)
   (setq org-media-note-pause-after-insert-link nil)
-  (setq org-media-note-use-refcite-first t))
-
-
-(use-package org-media-note-ui-transient
-  :init
-  :bind ("s-v" . org-media-note-transient))
-
-(use-package org-media-note-org-ref
-  :config
-  (setq org-media-note-bibtex-files nil))
+  (setq org-media-note-screenshot-image-dir "~/Screenshots/"))
 
 ;;(locate-library "org")
 (use-package org

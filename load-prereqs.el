@@ -58,10 +58,10 @@
      (file-name-concat $pkg-root "org-media-note" "contrib"))
   (featurep 'org-media-note)
   (require 'org-media-note)
-  (require 'org-media-note-org-ref)
+  (require 'org-media-note-cite)
   ;; obsolete
   ;; (require 'org-ref-publish)
-  (require 'org-media-note-ui-transient)
+  (require 'org-media-note-org-ref)
   ))
 
 
