@@ -42,8 +42,8 @@
    ((fboundp 'citar-get-entry)
     (citar-get-entry key))
    ((fboundp 'bibtex-completion-get-entry)
-    (bibtex-completion-get-entry key)
-   (t (message "Either citar or bibtex-completion should be installed!")))))
+    (bibtex-completion-get-entry key))
+   (t (message "Either citar or bibtex-completion should be installed!"))))
 
 (defun org-media-note-cite-get-value (key field)
   "Get the value of an entry's FIELD with KEY.  Return string."
@@ -52,8 +52,8 @@
     (citar-get-value field key))
    ((fboundp 'bibtex-completion-get-value)
     (bibtex-completion-get-value field
-				 (org-media-note-cite-get-entry key))
-   (t (message "Either citar or bibtex-completion should be installed!")))))
+				 (org-media-note-cite-get-entry key)))
+   (t (message "Either citar or bibtex-completion should be installed!"))))
 
 (defun org-media-note-cite-get-files (key)
   "Get the value of an entry's FIELD with KEY.  Return string."
