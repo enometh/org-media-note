@@ -207,6 +207,17 @@ and reverse lookups may fail.")
      (audio-files (file-truename (nth 0 audio-files)))
      (t nil)))))
 
+(defvar org-media-note-hack-youtube-dl-part-file-name-extension t
+  "Set to non-NIL for org-media-files to recognize media files
+of the form \"file.<ext>.part\".")
+
+(defun org-media-note-hack-youtube-dl-part-file-name-extension
+    (filename &optional period)
+  (let ((ret (file-name-extension filename period)))
+    (if (and (equal ret "part"))
+	(file-name-extension (file-name-sans-extension filename) period)
+      ret)))
+
 (defun org-media-note--filter-by-extensions (file-list extensions)
     "Filter files from FILE-LIST whose extensions belong to EXTENSIONS."
     (let ((result '())
@@ -214,7 +225,11 @@ and reverse lookups may fail.")
                         (list extensions)
                       extensions)))
       (dolist (file file-list)
-	(let ((raw-ext (file-name-extension file)))
+	(let ((raw-ext
+	       (if org-media-note-hack-youtube-dl-part-file-name-extension
+		   (org-media-note-hack-youtube-dl-part-file-name-extension
+		    file)
+	       (file-name-extension file))))
 	  (when (stringp raw-ext)
 	    (let ((ext (downcase raw-ext)))
 	      (when (member ext ext-list)
