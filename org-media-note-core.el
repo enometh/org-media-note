@@ -549,7 +549,7 @@ This list includes the following elements:
   (let* ((link-1 (if org-media-note-use-org-ref
 		     (org-media-note-ref-parse-path link)
 		   link))
-	 (splitted (split-string link "#"))
+	 (splitted (split-string link-1 "#"))
          (path (nth 0 splitted))
          (timestamps (if (> (length splitted) 1)
                          (split-string (nth 1 splitted) "-")
