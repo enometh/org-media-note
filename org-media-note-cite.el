@@ -53,7 +53,7 @@
    ((fboundp 'bibtex-completion-get-value)
     (bibtex-completion-get-value field
 				 (org-media-note-cite-get-entry key)))
-   (t (message "Either citar or bibtex-completion should be installed!")))))
+   (t (message "Either citar or bibtex-completion should be installed!"))))
 
 (defun org-media-note-cite-get-files (key)
   "Get the value of an entry's FIELD with KEY.  Return string."
