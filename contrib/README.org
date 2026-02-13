@@ -76,4 +76,10 @@
 ;; file name at the prompt: the the video/audio fragments will be
 ;; compiled into the single output media file.
 
+(require 'ol-bibtex-madhu)
+;; modifications to ol-bibtex.el for my workflow, add (:file . "Local
+;; File") to org-bibtex-fields.  (org-bibtex-create-and-exit): add a
+;; less interactive alternative to org-bibtex-create which won't get
+;; in your way.
+
 #+end_src
