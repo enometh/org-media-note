@@ -13,7 +13,8 @@
 ;;; lisp/org/ol-bibtex.el: (org-bibtex-{types,fields}): add :file to misc
 (dolist (entry org-bibtex-types)
   (when-let (elt (assoc :optional entry))
-    (setf (cdr elt) (append (cdr elt) '(:file)))))
+    (unless (find :file (cdr elt))
+      (setf (cdr elt) (append (cdr elt) '(:file))))))
 
 (cl-pushnew '(:file . "Local File") org-bibtex-fields :test #'equal)
 
@@ -75,3 +76,87 @@ point."
       (org-bibtex-put org-bibtex-key-property "FILLME")))
   (dolist (tag org-bibtex-tags) (org-toggle-tag tag 'on)))
 
+;; patch org-bibtex-headline to skip empty fields, modified from emacs
+;; master commit 4da38c63216186
+(defvar org-bibtex-export-empty-fields nil
+  "Used by org-bibtex-headline[-skip-empty-fields] to indicate
+if empty fields are to be skipped when creating the bib-file with
+org-bibtex.")
+
+(defun org-bibtex-headline--skip-empty-fields ()
+  "Return a bibtex entry of the given headline as a string. skips empty fields if `org-bibtex-export-empty-fields' is NIL."
+  (letrec ((val (lambda (key lst) (cdr (assoc key lst))))
+	   (to (lambda (string) (intern (concat ":" string))))
+	   (from (lambda (key) (substring (symbol-name key) 1)))
+	   (flatten (lambda (&rest lsts)
+		      (apply #'append (mapcar
+				       (lambda (e)
+					 (if (listp e) (apply flatten e) (list e)))
+				       lsts))))
+	   (id (org-bibtex-get org-bibtex-key-property))
+	   (type (org-bibtex-get org-bibtex-type-property-name))
+	   (tags (when org-bibtex-tags-are-keywords
+		   (delq nil
+			 (mapcar
+			  (lambda (tag)
+			    (unless (member tag
+					    (append org-bibtex-tags
+						    org-bibtex-no-export-tags))
+			      tag))
+			  (if org-bibtex-inherit-tags (org-get-tags)
+			    (org-get-tags nil t)))))))
+    (when type
+      (let ((entry (format
+		    "@%s{%s,\n%s\n}\n" type id
+		    (mapconcat
+		     (lambda (pair)
+                       (format "  %s={%s}" (car pair) (cdr pair)))
+		     (remove-if (lambda (pair)
+                                  (or (null pair)
+                                      (and (not org-bibtex-export-empty-fields)
+                                           (equal (cdr pair) ""))))
+			     (if (and org-bibtex-export-arbitrary-fields
+				      org-bibtex-prefix)
+				 (mapcar
+				  (lambda (kv)
+				    (let ((key (car kv)) (val0 (cdr kv)))
+				      (when (and
+					     (string-match org-bibtex-prefix key)
+					     (not (string=
+						   (downcase (concat org-bibtex-prefix
+								     org-bibtex-type-property-name))
+						   (downcase key))))
+					(cons (downcase (replace-regexp-in-string
+							 org-bibtex-prefix "" key))
+					      val0))))
+				  (org-entry-properties nil 'standard))
+			       (mapcar
+				(lambda (field)
+				  (let ((value (or (org-bibtex-get (funcall from field))
+						   (and (eq :title field)
+							(nth 4 (org-heading-components))))))
+				    (when value (cons (funcall from field) value))))
+				(funcall flatten
+					 (funcall val :required (funcall val (funcall to type) org-bibtex-types))
+					 (funcall val :optional (funcall val (funcall to type) org-bibtex-types))))))
+		     ",\n"))))
+	(with-temp-buffer
+	  (insert entry)
+	  (when tags
+	    (bibtex-beginning-of-entry)
+	    (if (re-search-forward "keywords.*=.*{\\(.*\\)}" nil t)
+		(progn (goto-char (match-end 1)) (insert ", "))
+	      (search-forward ",\n" nil t)
+	      (insert "  keywords={},\n")
+	      (search-backward "}," nil t))
+	    (insert (mapconcat #'identity tags ", ")))
+	  (buffer-string))))))
+
+(when nil
+  (advice-remove 'org-bibtex-headline
+		 #'org-bibtex-headline@skip-empty-fields-around-advice))
+
+(define-advice org-bibtex-headline (:around (_orig) skip-empty-fields-around-advice)
+  (org-bibtex-headline--skip-empty-fields))
+
+(provide 'ol-bibtex-madhu)
