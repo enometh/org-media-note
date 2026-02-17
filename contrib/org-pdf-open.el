@@ -16,14 +16,15 @@
 
 (defun org-pdf-open-default (pdf-file)
   (interactive)
-  (let ((ext (downcase (file-name-extension pdf-file))))
-    (if (or (cl-some (lambda (x) (string-match x ext)) org-media-note--video-types)
-	    (cl-some  (lambda (x) (string-match x ext)) org-media-note--audio-types))
-	(mpv-play pdf-file)
-      (if current-prefix-arg
-	  (start-process "view-pdf" nil "evince"  pdf-file)
-	(start-process "view-pdf" nil "mupdf-x11" pdf-file)
-	))))
+  (let ((ext (file-name-extension pdf-file)))
+    (cond ((and ext
+		(setq ext (downcase ext))
+		(or (cl-some (lambda (x) (string-match x ext)) org-media-note--video-types)
+		    (cl-some  (lambda (x) (string-match x ext)) org-media-note--audio-types))
+		(mpv-play pdf-file)))
+	  (current-prefix-arg
+	   (start-process "view-pdf" nil "evince"  pdf-file))
+	  (t (start-process "view-pdf" nil "mupdf-x11" pdf-file)))))
 
 
 (setq bibtex-completion-pdf-open-function 'org-pdf-open-default)
