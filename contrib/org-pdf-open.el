@@ -77,6 +77,38 @@
 	 (cl-adjoin "pdfcite" org-media-note-link-types :test #'equal)))
     (org-media-note-cite--help-echo _window _object position)))
 
+
+;;; ----------------------------------------------------------------------
+;;;
+;;; add a txtcite link type [txtcite:citation#123] where the open action
+;;; will open the file associated with citation at line 123
+;;;
+(org-add-link-type "txtcite" 'org-txt-cite-open nil)
+
+(cl-pushnew (cons "txtcite" (list "txtcite extensions via org-media-note contrib"))
+	    org-ref-cite-types
+	    :test (lambda (a b) (equal (car a) (car b))))
+
+(setf (plist-get (cdr (assoc "txtcite" org-link-parameters)) :activate-func)
+      #'org-ref-cite-activate)
+
+(defun org-txt-cite-open (link)
+  (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+	 (pos (cl-position ?# link))
+	 (ref-cite-1 (substring link 0 pos))
+	 (key (org-media-note-ref-parse-path ref-cite-1))
+	 (file (car (bibtex-completion-find-pdf key))))
+    (when file
+      (org-open-file file t (and pos (string-to-number (substring link (1+ pos))))))))
+
+(org-link-set-parameters "txtcite" :help-echo #'org-txt-cite-help-echo)
+
+(defun org-pdf-cite-help-echo  (_window _object position)
+  (let ((org-media-note-link-types
+	 (cl-adjoin "txtcite" org-media-note-link-types :test #'equal)))
+    (org-media-note-cite--help-echo _window _object position)))
+
+
 (provide 'org-pdf-open)
 
 ;; Local Variables:
