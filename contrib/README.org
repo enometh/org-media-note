@@ -61,6 +61,10 @@
 ;; provides some unpolished integration with mupdf/evince, pdfcite org
 ;; links.
 
+;; also defines a txtcite citation type [txtcite:&cite#NN] to open
+;; text files associated with the bib entry (via org-open-file) and
+;; position the buffer on line NN.
+
 (require 'bibtex-completion-utils)
 ;; provides functions to map over known bibtex entries.
 
