@@ -22,6 +22,7 @@
     (require 'orb-transient)
     (require 'org-pdf-open)
     (require 'omn-mpv-playback-positions-transient)
+    (require 'ol-bibtex-madhu)
     )))
 
 ;; obsolete ;;[Thu Oct 31 20:28:33 2024 +0530]
