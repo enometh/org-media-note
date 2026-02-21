@@ -13,7 +13,8 @@
 ;;; lisp/org/ol-bibtex.el: (org-bibtex-{types,fields}): add :file to misc
 (dolist (entry org-bibtex-types)
   (when-let (elt (assoc :optional entry))
-    (setf (cdr elt) (append (cdr elt) '(:file)))))
+    (unless (find :file (cdr elt))
+      (setf (cdr elt) (append (cdr elt) '(:file))))))
 
 (pushnew '(:file . "Local File") org-bibtex-fields :test #'equal)
 
@@ -77,10 +78,13 @@ point."
 
 ;; patch org-bibtex-headline to skip empty fields, modified from emacs
 ;; master commit 4da38c63216186
-(defvar org-bibtex-export-empty-fields nil)
+(defvar org-bibtex-export-empty-fields nil
+  "Used by org-bibtex-headline[-skip-empty-fields] to indicate
+if empty fields are to be skipped when creating the bib-file with
+org-bibtex.")
 
-(defun org-bibtex-headline ()
-  "Return a bibtex entry of the given headline as a string."
+(defun org-bibtex-headline--skip-empty-fields ()
+  "Return a bibtex entry of the given headline as a string. skips empty fields if `org-bibtex-export-empty-fields' is NIL."
   (letrec ((val (lambda (key lst) (cdr (assoc key lst))))
 	   (to (lambda (string) (intern (concat ":" string))))
 	   (from (lambda (key) (substring (symbol-name key) 1)))
@@ -147,3 +151,12 @@ point."
 	      (search-backward "}," nil t))
 	    (insert (mapconcat #'identity tags ", ")))
 	  (buffer-string))))))
+
+(when nil
+  (advice-remove 'org-bibtex-headline
+		 #'org-bibtex-headline@skip-empty-fields-around-advice))
+
+(define-advice org-bibtex-headline (:around (_orig) skip-empty-fields-around-advice)
+  (org-bibtex-headline--skip-empty-fields))
+
+(provide 'ol-bibtex-madhu)
