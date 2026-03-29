@@ -16,7 +16,7 @@
     (unless (find :file (cdr elt))
       (setf (cdr elt) (append (cdr elt) '(:file))))))
 
-(pushnew '(:file . "Local File") org-bibtex-fields :test #'equal)
+(cl-pushnew '(:file . "Local File") org-bibtex-fields :test #'equal)
 
 ;; madhu, Wed May 28 07:47:41 2025 +0530
 ;; work in an existing heading
