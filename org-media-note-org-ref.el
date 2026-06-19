@@ -46,7 +46,8 @@
       (funcall 'org-ref-format-entry ref-cite-key)
     ;; ;madhu 230410 copied from org-ref/org-ref-citation-links.el:
     ;; (org-ref-cite-tooltip). FIXME refactor in org-ref.
-    (let* ((bibtex-completion-bibliography (org-ref-find-bibliography))
+    (let* ((ref-cite-key (org-media-note-ref-parse-path ref-cite-key)) ;bad
+	   (bibtex-completion-bibliography (org-ref-find-bibliography))
            (has-pdf (when (bibtex-completion-find-pdf ref-cite-key)
                       bibtex-completion-pdf-symbol))
            (has-notes
