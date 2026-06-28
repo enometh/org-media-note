@@ -44,12 +44,17 @@
 
 (defun org-media-note-show-interface ()
   (interactive)
-  (org-media-note-transient))
+  (cond (transient--stack
+	 (message "resuming transient")
+	 (transient-resume))
+	(t
+	 (message "starting omn-transient")
+	 (org-media-note-transient))))
 
 (transient-define-prefix org-media-note-transient ()
   "Main transient for org-media-note."
   :transient-suffix 'transient--do-stay
-  :transient-non-suffix 'transient--do-leave
+  ;; :transient-non-suffix 'transient--do-leave
   [:description org-media-note--ui-title ""]
   [              ["\nFile"
                  ("o" org-media-note-play-smart
@@ -216,6 +221,15 @@
                                  (concat "AB-loop clip: "
                                          (org-media-note--ui-hightlight (if org-media-note-capture-ab-loop-ask-each-time
                                                                             "always ask" org-media-note-default-capture-ab-loop-function-name)))))]
+		[
+		 "Suspend"
+		 ("s-v" transient-suspend
+		  :description "suspend"
+				 )
+		 ("v" transient-suspend
+		  :description "suspend")
+		 ("q" transient-quit-one
+		  :description "quit one")]
 		]
 		)
 
