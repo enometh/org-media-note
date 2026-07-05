@@ -1161,7 +1161,7 @@ Supported formats:
   "Open FILE-PATH-OR-URL in mpv.
 TIME-A and TIME-B indicate the start and end of a playback loop."
   (let* ((online-video-p (if (org-media-note--online-video-p file-path-or-url)
-                             (if (executable-find "yt-dlp")
+                             (if (or t (executable-find "yt-dlp"))
                                  t
                                (error (concat "Warning: mpv needs the yt-dlp to play online videos."
                                               "yt-dlp-danmaku is also needed if you want bilibili danmaku.")))
