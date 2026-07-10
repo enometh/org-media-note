@@ -1,0 +1,155 @@
+#+title: bbc-gist-notes.el
+#+author: Madhu
+* COMMENT PRELUDE
+#+BEGIN_EXAMPLE
+;;;
+;;;   Time-stamp: <>
+;;;   Touched: Fri Jul 10 14:38:12 2026 +0530 <enometh@net.meer>
+;;;   Bugs-To: enometh@net.meer
+;;;   Status: Experimental.  Do not redistribute
+;;;   Copyright (C) 2026 Madhu.  All Rights Reserved.
+;;;
+#+END_EXAMPLE
+*  SYNOPSIS
+Convert a publicly available listing of m3u8 urls to live bbc radio
+streams to an org-file with audio links which can be opened by
+org-media-note.
+
+#+begin_src emacs-lisp :results silent
+;;  -*- lexical-binding: t -*-
+(cl-defstruct (bbc-elt (:type list)) caption uri frag)
+
+(cl-defun parse-bbc-uri (uri &key caption bitrate force-https)
+  (when (string-match
+	 "^http\\(s\\)?://.*/\\([^/]*\\)-audio%3d\\([0-9]+\\)\\.norewind\\.m3u8$"
+	 uri)
+    (let ((tlsp (match-string 1 uri))
+	  (frag (match-string 2 uri))
+	  (rate (match-string 3 uri)))
+      (when (and bitrate
+		 (not (equal bitrate rate)))
+	(setq uri (replace-match bitrate nil t uri 3)))
+      (when (and force-https
+		 (not tlsp)
+		 (string-match "^\\(http://\\)" uri))
+	(setq uri (replace-match "https://" nil t uri 1)))
+      (make-bbc-elt :caption caption :uri uri :frag frag))))
+
+(cl-assert (cl-equalp
+	    (parse-bbc-uri "http://host/frag-audio%3d320000.norewind.m3u8"
+			   :bitrate "42000"
+			   :force-https t)
+	    (make-bbc-elt :uri "https://host/frag-audio%3d42000.norewind.m3u8"
+			  :frag "frag")))
+
+(cl-defun read-bbc-gist (file &rest args &key (bitrate "48000") (force-https t))
+  (when bitrate
+    (cl-assert (cl-find bitrate  '("320000" "96000" "48000") :test #'equal)))
+  (cl-flet ((slurp-lines (file)
+	      (with-temp-buffer
+		(insert-file-contents file)
+		(split-string (buffer-string) "[\n]" t "[ \f\t\n\r\v]+"))))
+    (cl-loop for (header uri . rest)  on (cdr (slurp-lines file)) by #'cddr
+	     for caption = (and header
+				(string-match "^#EXTINF:-1,BBC - \\(.*\\)$"
+					      header)
+				(match-string 1 header))
+	     when (and header caption
+		       (parse-bbc-uri uri :caption caption :bitrate bitrate
+				      :force-https force-https))
+	     collect it)))
+
+(defun bbc-elt-sched-url (elt)
+  (let ((frag (bbc-elt-frag elt)))
+    (format "https://www.bbc.co.uk/sounds/schedules/%s" frag)))
+
+(defun bbc-elt-live-url (elt)
+  (let ((frag (bbc-elt-frag elt)))
+    (format "https://www.bbc.co.uk/sounds/play/live/%s" frag)))
+
+(cl-defun dump-1org (elts file)
+  (with-temp-buffer
+    (cl-loop for elt in elts
+	     with sep = "\n"
+	     do
+	     (insert (concat "** " (bbc-elt-caption elt) sep
+			     (format "[[audio:%s][%s]]" (bbc-elt-uri elt)
+				     (bbc-elt-frag elt))
+			     sep
+			     (format "[[%s][sched]]" (bbc-elt-sched-url elt))
+			     sep
+			     (format "[[%s][live]]" (bbc-elt-live-url elt))
+			     sep)))
+    (write-file file)))
+#+end_src
+
+** download gist
+#+begin_src sh :eval no
+curl $(echo aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9icHNpYi82NzA4OWI5NTllNGZhODk4YWY2OWZlYTU5YWQ3NGJjMy9yYXcvYzcyNTU4MzRmMzI2YmM2YTQwNjA4MGVlZDEwNGViYWE5ZDNiYzg1ZC9CQkMtUmFkaW8tSExTLm0zdQo= | base64 -d) > /dev/shm/bbc.gist
+sha1sum /dev/shm/bbc.gist
+# 6103638e9b0423f9db83f523916adf26ca29efa4  /dev/shm/bbc.gist
+#+end_src
+
+** convert to org1
+#+begin_src elisp
+(when nil
+(dump-1org (read-bbc-gist "/dev/shm/bbc.gist" :bitrate "48000" :force-https t) "/dev/shm/1.org"))
+
+;; open /dev/shm/1.org and C-c C-o on the links, audio: links should open mpv
+#+end_src
+
+** dump to html table
+#+begin_src elisp :eval silent
+(defun dump-2org (elts file)
+  (with-temp-buffer
+    (cl-loop for elt in elts
+	     with sep = " | " and sep-b = "| " and sep-e = " |\n"
+	     do
+	     (insert (concat sep-b (bbc-elt-caption elt) sep
+			     (format "[[audio:%s][%s]]" (bbc-elt-uri elt)
+				     (bbc-elt-frag elt))
+			     sep
+			     (format "[[%s][sched]]" (bbc-elt-sched-url elt))
+			     sep
+			     (format "[[%s][live]]" (bbc-elt-live-url elt))
+			     sep-e)))
+    (write-file file)))
+
+(defun org-to-bare-html (in-file out-file &optional async subtreep visible-only body-only ext-plist)
+  (with-temp-buffer
+    (insert-file-contents in-file)
+    (let ((org-html-head "")
+	  (org-html-head-extra "")
+	  (org-html-head-include-default-style nil)
+	  (org-html-head-include-scripts nil)
+	  (org-html-preamble nil)
+	  (org-html-postamble nil)
+	  (org-html-use-infojs nil)
+	  (org-export-with-sub-superscripts nil))
+      (let* ((extension (concat
+			 (when (> (length org-html-extension) 0) ".")
+			 (or (plist-get ext-plist :html-extension)
+			     org-html-extension
+			     "html")))
+	     (file (or out-file (org-export-output-file-name extension subtreep)))
+	     (org-export-coding-system org-html-coding-system))
+	(org-export-to-file 'html file
+	  async subtreep visible-only body-only ext-plist)))))
+(when nil
+(dump-2org (read-bbc-gist "/dev/shm/bbc.gist" :bitrate "48000")
+	   "/dev/shm/2.org")
+(org-to-bare-html "/dev/shm/2.org" "/dev/shm/1.html")
+;; test
+(setq $data (read-bbc-gist "/dev/shm/bbc.gist" :bitrate "48000" :force-https nil))
+(setq $frags (loop for elt in $data collect (bbc-elt-frag elt)))
+(setq $resp (shell-command-to-string (format "curl 'https://lsn.lv/bbcradio.m3u8?station=%s&bitrate=48000'" (elt $frags 10))))
+(equal (car (last (string-split $resp "[\n]")))
+       (bbc-elt-uri (elt $data 10))))
+#+end_src
+
+** tangle
+#+begin_src elisp :eval no
+(when nil
+(let ((org-babel-default-header-args (cl-adjoin '(:tangle . "yes") org-babel-default-header-args)))
+  (org-babel-tangle-file "bbc-gist-notes.org" "/dev/shm/bbc-gist-notes.el" "elisp\\|emacs-lisp")))
+#+end_src

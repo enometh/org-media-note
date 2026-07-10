@@ -86,4 +86,9 @@
 ;; less interactive alternative to org-bibtex-create which won't get
 ;; in your way.
 
+(require 'bbc-gist-notes)
+;; see bbc-gist-notes.org.  Convert a publicly available listing of
+;; m3u8 urls to live bbc radio streams to an org-file with audio links
+;; which can be opened by org-media-note.
+
 #+end_src
