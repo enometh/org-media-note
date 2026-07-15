@@ -1170,13 +1170,13 @@ TIME-A and TIME-B indicate the start and end of a playback loop."
                    (org-media-note--remove-utm-parameters file-path-or-url)
                  (expand-file-name file-path-or-url))))
     (if (not (string= path
-                      (mpv-get-property "path")))
+                      (ignore-errors (mpv-get-property "path"))))
         ;; file-path is not playing
         (progn
           (if time-a
               (message "open %s@t=%s..." path time-a)
             (message "%s" (format "open %s..." path)))
-          (apply 'mpv-start
+          (apply 'mpv-play ;madhu 260715 - instead of mpv-start to reuse the same process, use patched enometh/mpv.el
                  path
                  (org-media-note--build-mpv-args path time-a
                                                  time-b)))
