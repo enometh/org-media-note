@@ -141,7 +141,7 @@
   (setq org-adapt-indentation nil)
   (setq org-agenda-files nil)
   (setq org-agenda-remove-times-when-in-prefix 'beg) ; parashiot
-  (setq org-descriptive-links nil)
+  (setq org-link-descriptive nil) ; obsoleted org-descriptive-links
   ;;(setq org-export-allow-bind-keywords t)
   (setq org-insert-mode-line-in-empty-file t)
   (setq org-src-preserve-indentation t)
