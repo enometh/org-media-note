@@ -17,9 +17,10 @@
 		 (file-name-concat $pkg-root "org-media-note"))
     (add-to-list 'load-path
 		 (file-name-concat $pkg-root "org-media-note" "contrib"))
-    (require 'orc-transient)
-    (require 'or-transient)
-    (require 'orb-transient)
+    (when nil
+      (require 'orc-transient)
+      (require 'or-transient)
+      (require 'orb-transient))
     (require 'org-pdf-open)
     (require 'omn-mpv-playback-positions-transient)
     (require 'ol-bibtex-madhu)
@@ -29,8 +30,9 @@
 (when nil
 (use-package omn-transient
   :init
-  :bind ("s-v" . omn-transient)))
+  :bind ("s-v" . omn-transient))
 
+;; obsolete ;madhu 260716
 (use-package or-transient
   :init
   (setq org-ref-insert-cite-function 'org-ref-insert-cite-link)
@@ -43,7 +45,7 @@
   :bind ("s-b" . orb-transient))
 
 (use-package orc-transient
-  :bind ("s-c" . org-ref-citation-transient))
+  :bind ("s-c" . org-ref-citation-transient)))
 
 (use-package omn-mpv-playback-positions-transient
   :bind ("s-l" . 'omn-mpv-playback-positions-transient))

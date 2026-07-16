@@ -156,3 +156,16 @@
 	      :test (lambda (a b) (cl-equalp (car a) (car b)))))
 
 
+;;(locate-library "org-ref-core")
+;;(cl-assert (featurep 'org-ref-core))
+(use-package org-ref-core
+  :init
+  (setq org-ref-insert-cite-function 'org-ref-insert-cite-link)
+  (setq org-ref-insert-ref-function 'org-ref-insert-ref-link)
+  (setq org-ref-insert-label-function 'org-ref-insert-label-link)
+  (setq org-ref-cite-onclick-function (lambda(_)
+					(org-ref-citation-menu)))
+  :bind
+  ("s-]" . org-ref-insert-link-menu)
+  ("s-b" . org-ref-bibtex-entry-menu) ; bibtex buffers
+  ("s-c" . org-ref-citation-menu))
