@@ -108,7 +108,8 @@
   (setq org-latex-bib-compiler "biber"))
 
 ;;(cl-assert (featurep 'org-ref-publish))
-;; enometh/org-media-note/contrib
+;;(locate-library "org-ref-publish")
+;; org-ref/org-ref-publish.el
 (use-package org-ref-publish)
 
 ;;(locate-library "mpv")
