@@ -29,4 +29,20 @@
 		))
 	  (funcall func entry-key entry))))))
 
+(defun my-inveigle-biblatex ()
+  "When visiting a bibtex file, set bibtex-completion-bibliography
+variable to include the current file, so org-ref bibtex functions like
+`org-ref-bibtex-entry-menu' can work on it. e.g. as a file local:
+variable:
+
+% -*- mode:bibtex; eval: (my-inveigle-biblatex) -*-
+"
+  (interactive)
+  (when (eq major-mode 'bibtex-mode)
+    (bibtex-set-dialect 'biblatex t)
+    (let ((path (expand-file-name (buffer-file-name))))
+      (unless (cl-find path bibtex-completion-bibliography :test #'equal)
+	(setq-local bibtex-completion-bibliography
+		    (cons path bibtex-completion-bibliography))))))
+
 (provide 'bibtex-completion-utils)
