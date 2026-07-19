@@ -159,4 +159,65 @@ org-bibtex.")
 (define-advice org-bibtex-headline (:around (_orig) skip-empty-fields-around-advice)
   (org-bibtex-headline--skip-empty-fields))
 
+
+;;; ----------------------------------------------------------------------
+;;;
+;;;
+;;;
+(defvar $org-bibtex-autokey-vars
+  '(bibtex-autokey-year-length
+    bibtex-autokey-name-year-separator
+    bibtex-autokey-year-title-separator
+    bibtex-autokey-titleword-separator
+    bibtex-autokey-titlewords
+    bibtex-autokey-titlewords-stretch
+    bibtex-autokey-titleword-length))
+
+(defvar $org-bibtex-autokey-var-defaults
+  '(2 "" ":_" "_" 5 2 5))
+
+(when nil
+  (mapcar (lambda (x) (eval (car (get x 'standard-value))))
+	  $org-bibtex-autokey-vars))
+
+(defvar $org-bibtex-autokey-var-alt
+  '(4 "-" "-" "-" 2 1 5))
+
+(when nil
+  (let (,$org-bibtex-autokey-vars)
+    (setq bibtex-autokey-year-length 4
+	  bibtex-autokey-name-year-separator "-"
+	  bibtex-autokey-year-title-separator "-"
+	  bibtex-autokey-titleword-separator "-"
+	  bibtex-autokey-titlewords 2
+	  bibtex-autokey-titlewords-stretch 1
+	  bibtex-autokey-titleword-length 5)
+    (mapcar 'symbol-value $org-bibtex-autokey-vars))
+(progv $org-bibtex-autokey-vars $org-bibtex-autokey-var-alt
+   (mapcar 'symbol-value $org-bibtex-autokey-vars))
+(progv $org-bibtex-autokey-vars $org-bibtex-autokey-var-defaults
+  `(setq ,@(loop for k in $v append (list k (symbol-value k))))))
+
+(cl-defmacro with-org-bibtex-autokey-defaults (&body body)
+  `(progv $org-bibtex-autokey-vars  $org-bibtex-autokey-var-alt
+     ,@body))
+
+(defun org-bibtex-autokey-dry-run (&optional replace)
+  "Generate an autokey for the current headline."
+  (interactive "P")
+  (with-org-bibtex-autokey-defaults
+   (let ((new (let* ((entry (org-bibtex-headline))
+		     (key
+		      (with-temp-buffer
+			(insert entry)
+			(bibtex-generate-autokey))))
+		(when (and
+		       (equal org-bibtex-key-property "ID")
+		       (featurep 'org-id)
+		       (hash-table-p org-id-locations)
+		       (gethash key org-id-locations))
+		  (warn "Another entry has the same ID"))
+		key)))
+     (message "%S" new))))
+
 (provide 'ol-bibtex-madhu)
