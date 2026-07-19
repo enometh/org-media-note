@@ -220,4 +220,87 @@ org-bibtex.")
 		key)))
      (message "%S" new))))
 
+
+;;; ----------------------------------------------------------------------
+;;;
+;;;
+;;;
+
+(defvar $org-bibtex-org-ref-clean-bibtex-entry-hook
+  '(org-ref-bibtex-format-url-if-doi
+    orcb-key-comma
+    org-ref-replace-nonascii
+    orcb-&
+    orcb-%
+    org-ref-title-case-article
+    orcb-clean-year
+    orcb-key
+    orcb-clean-doi
+    orcb-clean-pages
+    orcb-check-journal
+    org-ref-sort-bibtex-entry
+    orcb-fix-spacing
+    ;;orcb-download-pdf
+    )
+  "Overrides the value of `org-ref-clean-bibtex-entry-hook' from
+org-ref-bibtex.el")
+
+(defun org-bibtex-frob-entry (entry)
+  "Ignores all :keyword frobbing.  ENTRY is an alist as is produced
+by `org-bibtex-read'.  frobs ENTRY by translateing some of the alist
+keywords so the alist can be processed by ol-bibtex."
+  (setq entry (copy-tree entry))
+  (cl-loop for elt in entry for (k . v) = elt
+	   do (pcase k
+		(:title (rplaca elt "TITLE"))
+		(:type (rplaca elt org-bibtex-type-property-name)
+		       (rplacd elt (downcase v)))
+		(:key (rplaca elt org-bibtex-key-property))))
+    entry)
+
+(defun org-bibtex-orcb-clean ()
+  (interactive)
+  (save-restriction
+    (org-narrow-to-subtree)
+    (let* ((org-ref-clean-bibtex-entry-hook
+	     $org-bibtex-org-ref-clean-bibtex-entry-hook)
+	   (insert-raw nil)
+	   (update-heading t)
+	   (bib-entry (org-bibtex-headline))
+	   (org-bibtex-entries nil)
+	   (entry (with-temp-buffer
+		    (insert bib-entry)
+		    (with-org-bibtex-autokey-defaults
+		     (org-ref-clean-bibtex-entry))
+		    (goto-char (point-min))
+		    (car (org-bibtex-read))))
+	   (cleaned-entry (org-bibtex-frob-entry entry))
+	   (level (org-outline-level))
+	   (head (org-get-heading))
+	   (prop-block (let ((bounds (org-get-property-block)))
+			 (buffer-substring (car bounds) (cdr bounds)))))
+      (with-temp-buffer
+	(org-mode)
+	(org-insert-heading)
+	(cl-loop for i below level do (insert "*"))
+	(insert " " head "\n")
+	(insert ":PROPERTIES:\n" prop-block ":END:\n")
+	(let ((b (clone-buffer (generate-new-buffer-name (buffer-name)))))
+	  (unwind-protect
+	      (progn
+		(with-current-buffer b
+		  (org-back-to-heading)
+		  (replace-string
+		   head
+		   (funcall org-bibtex-headline-format-function entry)
+		   nil
+		   (point)
+		   (line-end-position))
+		  (cl-loop for (k . v) in cleaned-entry
+			   do (org-bibtex-put k v)))
+		(diff-buffers (current-buffer) b)
+		;;(debug)
+		)
+	    (kill-buffer b)))))))
+
 (provide 'ol-bibtex-madhu)
