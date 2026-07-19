@@ -23,33 +23,6 @@
 ;;; * Contribs - or use some of these contribs
 (add-to-list 'load-path "~/elisp/pkg/org-media-note/contrib")
 
-;;; * Org-ref contribs. these contribs really belong to the org-ref
-;;; package. Instead of using "hydra" they use the so-called
-;;; "transient" package for the UI.
-
-(require 'or-transient)
-;; `or-insert-transient' is a replacement for
-;; `org-ref-insert-link-hydra/body'
-;;
-;; (setq org-ref-insert-link-function 'or-insert-link-transient)
-;; (setq org-ref-insert-link-function 'org-ref-insert-link-hydra/body)
-
-(require 'orb-transient)
-;; `orb-transient' is a replacement for `org-ref-bibtex-hydra/body'
-;;
-;; (keymap-set bibtex-mode-map "s-b" 'orb-transient)
-;; (keymap-set bibtex-mode-map "s-b" 'org-ref-bibtex-hydra/body)
-
-(require 'orc-transient)
-;; `org-ref-citation-transient' is a replacement for
-;; `org-ref-citation-hydra/body'
-;;
-;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-hydra/body)))
-;; (setq org-ref-cite-onclick-function  (lambda (_) (org-ref-citation-transient)))
-;; (defun org-ref-cite-follow-override-advice (_path) (interactive) (org-ref-citation-transient))
-;; (advice-remove  'org-ref-cite-follow 'org-ref-cite-follow-override-advice)
-;; (advice-add 'org-ref-cite-follow :override 'org-ref-cite-follow-override-advice)
-
 ;; ** OMN-PLAYBACK-POSITIONS
 (require 'omn-mpv-playback-position-transient)
 ;; (keymap-set org-mode-map "s-l" 'org-ref-bibtex-hydra/body)

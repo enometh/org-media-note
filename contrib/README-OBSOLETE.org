@@ -6,18 +6,21 @@ directory which are not usable with current org-media-note.
 #+begin_src elisp
 ;; an alternative to pretty-hydra (only uses regular hydra)
 (require 'omn-hydra)
-(keymap-global-set "s-v" 'omn-hydra/body)
 
 ;; or use the so-called "transient" package
 (require 'omn-transient)
-(keymap-global-set "s-v" 'omn-transient)
 
-(require 'org-ref-publish)
 ;; this is now in org-ref (commit 2aa6dd687 2023-06-29)
-;;
+(require 'org-ref-publish)
 
+;; the following were provided as so called "transient-ui"
+;; replacements for hydra functions in org-ref.
+;; as of org-ref commit 4500ddd 2025-10-12 there are "transient"
+;; replacements in org-ref
+(require 'or-transient)
+(require 'orb-transient)
+(require 'orc-transient)
 #+end_src
-
 
 * Renamed functions
 #+begin_src elisp
