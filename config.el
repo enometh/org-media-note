@@ -39,7 +39,9 @@
   (setq bibtex-completion-bibliography nil) ;XXX
   (setq bibtex-completion-library-path nil)
   (setq bibtex-completion-notes-path nil) ;XXX
-  (setq bibtex-completion-pdf-field "file"))
+  (setq bibtex-completion-pdf-field "file")
+  (setq bibtex-completion-display-formats
+	'((t . "${author:25} ${title:*} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}"))))
 
 ;; bibtex-completion-library-path
 ;; bibtex-completion-notes-path
