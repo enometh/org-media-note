@@ -11,23 +11,29 @@
 ;; load and configure org-media-note extras
 
 (let (($pkg-root (or $omn-alt-pkg-root $pkg-root)))
+  (let ((load-path load-path))
+    (add-to-list 'load-path
+		 (file-name-concat $pkg-root "org-media-note" "contrib"))
+    (require 'org-pdf-open)
+    (require 'omn-mpv-playback-positions-transient)
+    (require 'ol-bibtex-madhu)))
+
+(use-package omn-mpv-playback-positions-transient
+  :bind ("s-l" . 'omn-mpv-playback-positions-transient))
+
+
+(when nil
 (unless (locate-library "orc-transient")
   (let ((load-path load-path))
     (add-to-list 'load-path
 		 (file-name-concat $pkg-root "org-media-note"))
     (add-to-list 'load-path
 		 (file-name-concat $pkg-root "org-media-note" "contrib"))
-    (when nil
       (require 'orc-transient)
       (require 'or-transient)
-      (require 'orb-transient))
-    (require 'org-pdf-open)
-    (require 'omn-mpv-playback-positions-transient)
-    (require 'ol-bibtex-madhu)
-    )))
+      (require 'orb-transient)))
 
 ;; obsolete ;;[Thu Oct 31 20:28:33 2024 +0530]
-(when nil
 (use-package omn-transient
   :init
   :bind ("s-v" . omn-transient))
@@ -46,7 +52,3 @@
 
 (use-package orc-transient
   :bind ("s-c" . org-ref-citation-transient)))
-
-(use-package omn-mpv-playback-positions-transient
-  :bind ("s-l" . 'omn-mpv-playback-positions-transient))
-
