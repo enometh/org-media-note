@@ -22,6 +22,8 @@
 		(or (cl-some (lambda (x) (string-match x ext)) org-media-note--video-types)
 		    (cl-some  (lambda (x) (string-match x ext)) org-media-note--audio-types))
 		(mpv-play pdf-file)))
+	  ((equal ext "exe")
+	   (shell-command (concat "wine " pdf-file "&")))
 	  (current-prefix-arg
 	   (start-process "view-pdf" nil "evince"  pdf-file))
 	  (t (start-process "view-pdf" nil "mupdf-x11" pdf-file)))))
