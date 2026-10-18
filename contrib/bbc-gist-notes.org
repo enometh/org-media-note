@@ -159,15 +159,15 @@ Upto 6, possibly 24 hours.
 
 #+begin_src elisp :eval no
 ;; "The media segment names are just epoch / 6.4 so you can construct
-;; a playlist for any time and date. Presumably the official
+;; a playlist for any time and date. Whether the segments are still on
+;; the CDN is another thing entirely.  Presumably the official
 ;; rewindable playlist has 6 hours of segments because that is their
 ;; guaranteed retention. That said, I've tested quickly and can play
 ;; back segments from at least 12 hours ago."
-;;
-;;  -- johnpenny (2026-07-15) gist permalink_comment_id=6256527
+;;		-- johnpenny (2026-07-15) gist permalink_comment_id=6256527
 
 (defun seg0 (timestamp)
-  (floor timestamp 6.4))
+  (1+ (floor timestamp 6.4)))
 
 (defun uri-prefix-for-frag (frag elts)
   " ELTS is an object returned by calling `read-bbc-gist'."
@@ -178,12 +178,19 @@ Upto 6, possibly 24 hours.
     (let ((p (cl-position ?\/ uri :from-end t)))
       (cl-subseq uri 0 (1+ p)))))
 
-(cl-defun dump-m3u8 (&key file seg0 (count 5) frag (bitrate 48000)
+(cl-defun dump-m3u8 (&key file seg0 (count 5 count-supplied-p)
+			  frag (bitrate 48000)
+			  seconds
 			  uri-prefix)
   "Write a m3u8 FILE with COUNT segments starting at segment number SEG0
-for the BBC station FRAG at the given BITRATE.  Each segment is
-probably lasts 6 seconds.  If FILE is NIL return the contents as a
-string."
+for the BBC station FRAG at the given BITRATE.  Each segment probably
+lasts 6.4 seconds.  If FILE is NIL return the contents as a string.
+SECONDS if specified overrides COUNT"
+  (when seconds
+    (if count-supplied-p
+	(warn "dump-m3u8: overriding specified count %s with %s seconds"
+	      count seconds))
+    (setq count (round seconds 6.4)))
   (let* ((bitrate (if (stringp bitrate) bitrate (number-to-string bitrate)))
 	 (body (with-temp-buffer
 		 (insert "#EXTM3U
@@ -208,17 +215,16 @@ string."
 
 (when nil
 (setq $elts (read-bbc-gist "/dev/shm/bbc.gist" :force-https t))
-;; 30 minutes of the show at 4pm IST today
-(setq $rfrag "bbc_radio_four_extra")
+;; 2 minutes of Bells on Sunday at 5:43 AM on Radio 4
+(setq $rfrag "bbc_radio_fourfm")
 (setq $epoch (string-to-number
 	      (shell-command-to-string
-	       "(TZ='Europe/London' date -d '11:30:00' +%s)")))
+	       "(TZ='Europe/London' date -d '05:43:00' +%s)")))
 (shell-command-to-string (format "TZ=Europe/London date -d @%s" $epoch))
-;; ffmpeg can probably play the generated m3u8 file with
-;; -protocol_whitelist file,http,https, mpv wants it to be hosted, say
-;; locally with python -mhttp.server
+;; ffmpeg can play the generated m3u8 file with -protocol_whitelist
+;; file,http,https,tcp but mpv wants it to be hosted
 (dump-m3u8 :seg0 (seg0 $epoch)
-	   :count (round (* 30.0 60.0 ) 6.4)
+	   :seconds  (* 2 60)
 	   :frag $rfrag
 	   :file "/tmp/2.m3u8"
 	   :uri-prefix (uri-prefix-for-frag $rfrag $elts)))
