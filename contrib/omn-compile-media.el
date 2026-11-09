@@ -149,4 +149,73 @@ have an timestamp interval."
   (let ((cmd (org-media-note-get-media-links-in-region beg end)))
     (compile-media-sync cmd outfile)))
 
+
+;;; ----------------------------------------------------------------------
+;;; non-`reencoding' versions of the `concat' compile-media functions,
+;;; (which call -c -copy instead) for stitching together aac pcm files
+;;; (works against the compile-media commmit on 2026-09-19).
+
+(defun compile-media--process-intermediate-audio-copy (sources temp-dir)
+  (let ((audio-index 0)	processed-audio)
+    (dolist (seg (cdr (assoc 'audio sources)))
+      (let* ((source (compile-media-maybe-expand-filename (plist-get seg :source)))
+	     (start-ms (compile-media-string-to-msecs
+			(or
+			 (plist-get seg :original-start-ms)
+			 (plist-get seg :start-ms)
+			 0)))
+	     (stop-ms (compile-media-string-to-msecs
+		       (or
+			(plist-get seg :original-stop-ms)
+			(plist-get seg :stop-ms))))
+	     (duration-ms (when stop-ms (- stop-ms start-ms)))
+	     (dest-file (expand-file-name (format "audio-%04d.wav" audio-index) temp-dir))
+	     (cmd
+	      (compile-media--transform-ffmpeg-command
+	       (append
+		(list "ffmpeg" "-y")
+		(list
+		 "-ss" (format "%f" (/ start-ms 1000.0))) ;; Seek BEFORE -i for speed and reset
+		(when duration-ms (list "-t" (format "%f" (/ duration-ms 1000.0))))
+		(list "-i" (expand-file-name source))
+		(list "-c" "copy")
+		(list
+		 dest-file)))))
+	(when compile-media--debug
+	  (message "%s" (mapconcat 'shell-quote-argument cmd " "))
+	(unless compile-media-dry-run
+	  (apply #'call-process (car cmd) nil nil nil (cdr cmd)))
+	(push (plist-put seg :intermediate dest-file) processed-audio)
+	(setq audio-index (1+ audio-index)))))
+    (nreverse processed-audio)))
+
+;; call this instead of compile-media-sync
+(defun compile-media-audio-copy (sources output-file &rest args)
+  (setq output-file (expand-file-name output-file))
+  (setq sources (compile-media-expand-combined-sources sources))
+  (let* ((temp-dir (make-temp-file "compile-media" t))
+	 (a-list (expand-file-name "audio_list.txt" temp-dir))
+	 (processed-audio
+	  (compile-media--process-intermediate-audio-copy sources temp-dir))
+	 (command (append
+		   (list "ffmpeg" "-y")
+		   (when processed-audio (list "-f" "concat" "-safe" "0" "-i" (shell-quote-argument a-list)))
+		   (list "-c" "copy")
+		   (list (expand-file-name output-file)))))
+    (compile-media--make-concat-file a-list processed-audio)
+    (with-current-buffer (get-buffer-create "*ffmpeg*")
+      (insert "CMD "
+	      (car command) " "
+	      (mapconcat 'shell-quote-argument (append (cdr command) args) " ")
+	      "\n")
+      (apply #'call-process
+	     (car command)
+	     nil (current-buffer) nil (append (cdr command) args))
+      (unless (or compile-media--debug compile-media-dry-run)
+	(delete-directory temp-dir t))
+      (mapconcat 'shell-quote-argument command " "))))
+
+
+
+
 (provide 'omn-compile-media)
